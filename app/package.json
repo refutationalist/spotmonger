@@ -1,0 +1,21 @@
+{
+	"name":        "com.tacomatelematics.studmufn.spotmonger",
+	"description": "music-on-console front end as cart player",
+	"version":     0.5,
+	"main":        "spotmonger.html",
+	"window": {
+		"title":      "SpotMonger",
+		"icon":       "icon.png",
+		"toolbar":    false,
+		"width":      750,
+		"height":     240,
+		"resizable":  false,
+		"show":		  false
+	},
+	"js-flags":{
+			"name":"com.tacomatelematics.studmufn.spotmonger"
+	},
+	"chromium-args" : "--enable-touch-events"
+
+
+}

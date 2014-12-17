@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SpotMonger Time Select</title>
+		<style>
+			@import url("css/style.css");
+		</style>
+		<script src="js/jquery-2.1.1.min.js"></script>
+		<script src="js/settime.js"></script>
+		
+	</head>
+	<body>
+		<div class="time_set">
+			<p>Set Cue time For "<span id="cart_name">Break_S17E17</span>"</p>
+
+			<input type="hidden" id="cart_id" val="" />
+
+			<div class="widget">
+
+				<div class='hour'>
+					<div class="up btn">&#xf062;</div>
+					<input type='text' maxlength='2' name='hour' id='hour' value='' />
+					<div class="down btn">&#xf063;</div>
+				</div>
+
+				<div class='colon'>:</div>
+
+				<div class='minute'>
+					<div class="up btn">&#xf062;</div>
+					<input type='text' maxlength='2' name='minute' id='minute' value='00' />
+					<div class="down btn">&#xf063;</div>
+				</div>
+				<div class='colon'>:</div>
+
+				<div class='second'>
+					<div class="up btn">&#xf062;</div>
+					<input type='text' maxlength='2' name='second' id='second' value='00' />
+					<div class="down btn">&#xf063;</div>
+				</div>
+
+				<!--
+				<div class="ampm">
+					<button id="am">AM</button>
+					<button id="pm">PM</button>
+				</div>
+				-->
+
+			</div>
+			<div class="quick_select">
+				<h2>Quick Select</h2>
+				<button id="t00">:00</button>
+				<button id="t10">:10</button>
+				<button id="t20">:20</button>
+				<button id="t30">:30</button>
+				<button id="t40">:40</button>
+				<button id="t50">:50</button>
+				<div class="type_select">
+					<div class='btn' id="qs_minute">Minutes</div>
+					<div class='btn' id="qs_second">Seconds</div>
+				</div>
+			</div>
+				
+			<div class="buttons">
+				<button class='btn set' id="set">Set Cue Time</button>
+				<button class='btn close' id="close">Cancel Cue</button>
+			</div>
+		</div>
+	</body>
+
+</html>

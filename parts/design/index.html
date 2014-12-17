@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Cart-a-MOC</title>
+		<style>
+			@import url("css/style.css");
+		</style>
+	</head>
+	<body>
+
+		<div id="main">
+			<div id="carts">
+				<div>
+					<div class="cart">
+						<div class="name">Cart Name</div>
+						<div class="state">Playing</div>
+						<div class="time">00:00</div>
+						<div class='timeset icon'>&#xf017;</div>
+					</div>
+				</div>
+				<button id="startload">Load Cart</button>
+			</div>
+
+			<div id="display">
+				<p class="tracknum">
+					<span class='t'>99</span>
+					/
+					<span class='o'>99</span>
+				</p>
+				<p class="cartname">Stop Quack Gagging Cart</p>
+				<p class="trackname">Stop Quack Gagging Track</p>
+
+				<div class="bar">
+					<div class="fill"></div>
+				</div>
+				<div class="time"></div>
+				
+			</div>
+
+			<div id="info"></div>
+
+			<div id="control">
+				<div id="prev"  class="btn icon">&#xf049;</div>
+				<!-- pause: &#xf04c; -->
+				<div id="play"  class="btn icon">&#xf04b;</div>
+				<div id="next"  class="btn icon">&#xf050;</div>
+				<div id="eject" class="btn icon">&#xf052;</div>
+				<div id="conf" class="btn icon">&#xf0ad;</div>
+			</div>
+		</div>
+
+		<input type='file' id='file_load' />
+
+	</body>
+</html>

@@ -1,0 +1,31 @@
+# Maintainer: Sam Mulvey <sam@tacomatelematics.com>
+# AS YET UNRELEASED
+pkgname=cartamoc
+pkgver=0.8.0.p1
+pkgrel=1
+pkgdesc="interface to music on console to work as a cartplayer"
+arch=('x86_64' 'i686')
+url="http://sam.vis.nu/"
+license=('GPL')
+groups=('studmufn')
+depends=('node-webkit' 'php' 'ffmpeg' 'tar' 'mplayer')
+changelog=
+source=(cartamoc.tgz)
+noextract=(cartamoc.nw)
+install="cartamoc.install"
+
+
+
+build() {
+	echo "I like pie."
+}
+
+
+package() {
+	cd $pkgdir
+
+	cp -r ${srcdir}/mk/* .
+	chown -R root:root $pkgdir
+	chmod 755 ${pkgdir}/usr/bin/cartamoc
+	
+}

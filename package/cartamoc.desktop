@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Cart-a-MOC
+Comment=Music on Console interface for .cart files
+Exec=/usr/bin/cartamoc
+Terminal=false
+Icon=cartamoc.png
+Type=Application
+Categories=AudioVideo;Audio;
