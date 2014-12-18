@@ -8,8 +8,8 @@ $(document).ready(function() {
 	});
 
 	
-	console.log("suppress", window.opener.errors_suppress);
-	if (window.opener.errors_suppress == true) {
+	console.log("suppress", window.opener.sm.errors_suppress);
+	if (window.opener.sm.errors_suppress == true) {
 		$("#suppress").addClass("pressed");
 		console.error("is suppressed");
 
@@ -17,12 +17,12 @@ $(document).ready(function() {
 
 	$("#suppress").click(function() {
 
-		if (window.opener.errors_suppress == true) {
+		if (window.opener.sm.errors_suppress == true) {
 			$(this).removeClass("pressed");
-			window.opener.errors_suppress = false;
+			window.opener.sm.errors_suppress = false;
 		} else {
 			$("#suppress").addClass("pressed");
-			window.opener.errors_suppress = true;
+			window.opener.sm.errors_suppress = true;
 		}
 
 	});
@@ -30,6 +30,6 @@ $(document).ready(function() {
 
 
 function put_logs() {
-	$("#err").html(window.opener.errors.join("<br />\n"));
+	$("#err").html(window.opener.sm.errors.join("<br />\n"));
 	$("#err").scrollTop($("#err")[0].scrollHeight);
 }

@@ -1,2 +1,0 @@
-#!/bin/sh
-exec nw /usr/share/cartamoc/cartamoc.nw $*

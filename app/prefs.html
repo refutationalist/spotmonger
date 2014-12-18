@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SpotMonger Preferences</title>
+		<style>
+			@import url("css/style.css");
+		</style>
+		<script src="js/jquery-2.1.1.min.js"></script>
+		<script src="js/prefs.js"></script>
+		
+	</head>
+	<body>
+		<div class="prefs">
+			<h1>Preferences</h1>
+
+			<div>
+				<label for="jack_ports">JACK Connect Regex:</label>
+				<span><input type="text" name="jack_ports" id="jack_ports" /></span>
+				<span class="e">
+					<input type="checkbox" name="jack_noconnect" id="jack_noconnect" value="true" />
+					<label for="jack_noconnect">Disable JACK Autoconnect</label>
+				</span>
+			</div>
+
+			<div>
+				<label for="cue_command">At-Cue Command:</label>
+				<span><input type="text" name="cue_command" id="cue_command" /></span>
+				<span class="e">
+					Command to execute when a cart is cued up by the scheduler.
+					(e.g. set mixer level, update displays)
+				</span>
+			</div>
+
+			<div>
+				<label for="state_file">State File:</label>
+				<span><input type="text" name="state_file" id="state_file" /></span>
+			</div>
+
+
+			<div class="buttons">
+				<button id="show_logs" class="btn">Show Error Logs</button>
+				<button id="save_prefs" class="btn">Save Preferences</button>
+			</div>
+
+		</div>
+
+	</body>
+
+</html>

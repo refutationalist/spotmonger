@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=SpotMonger
+Comment=MPlayer-based Virtual Fidelipac Player
+Exec=/usr/bin/spotmonger
+Terminal=false
+Icon=spotmonger.png
+Type=Application
+Categories=AudioVideo;Audio;

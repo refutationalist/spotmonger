@@ -133,6 +133,7 @@ function change_ms(id, sub) {
 
 
 function set_info(id, name, in_cart) {
+	console.log("cart", in_cart);
 	$("#cart_name").html(name);
 	cart = in_cart;
 	cart_id = id;

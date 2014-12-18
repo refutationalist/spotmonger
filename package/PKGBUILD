@@ -1,6 +1,6 @@
 # Maintainer: Sam Mulvey <sam@tacomatelematics.com>
 # AS YET UNRELEASED
-pkgname=cartamoc
+pkgname=spotmonger
 pkgver=0.8.0.p1
 pkgrel=1
 pkgdesc="interface to music on console to work as a cartplayer"
@@ -10,9 +10,10 @@ license=('GPL')
 groups=('studmufn')
 depends=('node-webkit' 'php' 'ffmpeg' 'tar' 'mplayer')
 changelog=
-source=(cartamoc.tgz)
-noextract=(cartamoc.nw)
-install="cartamoc.install"
+replaces=('cartamoc')
+source=(spotmonger.tgz)
+noextract=(spotmonger.nw)
+install="spotmonger.install"
 
 
 
@@ -26,6 +27,6 @@ package() {
 
 	cp -r ${srcdir}/mk/* .
 	chown -R root:root $pkgdir
-	chmod 755 ${pkgdir}/usr/bin/cartamoc
+	chmod 755 ${pkgdir}/usr/bin/spotmonger
 	
 }
