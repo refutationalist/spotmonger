@@ -3,7 +3,7 @@
 var CartFiles = function() {
 	this.carts      = { };
 	this.tmpdir     = "/tmp";
-	this.fileprefix = 'cartamoc.'+process.pid;
+	this.fileprefix = 'spotmonger.'+process.pid;
 	this.tar        = "/usr/bin/tar";
 	this.ffprobe    = "/usr/bin/ffprobe";
 

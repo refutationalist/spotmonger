@@ -17,9 +17,9 @@ var MPlayerControl = function(mplayer, ports) {
 
 
 	if (ports == "noconnect") {
-		this.flags.unshift("-ao", "jack:name=cartamoc:noconnect");
+		this.flags.unshift("-ao", "jack:name=spotmonger:noconnect");
 	} else {
-		this.flags.unshift("-ao", "jack:name=cartamoc:port="+ports);
+		this.flags.unshift("-ao", "jack:name=spotmonger:port="+ports);
 	}
 
 

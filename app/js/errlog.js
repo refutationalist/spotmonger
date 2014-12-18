@@ -1,4 +1,5 @@
 
+var current_length = 0;
 
 $(document).ready(function() {
 	put_logs();
@@ -26,10 +27,18 @@ $(document).ready(function() {
 		}
 
 	});
+
+	setInterval(function() {
+		if (current_length != 
+			window.opener.sm.errors.length) {
+			put_logs();
+		}
+	}, 500);
 });
 
 
 function put_logs() {
+	current_length = window.opener.sm.errors.length;
 	$("#err").html(window.opener.sm.errors.join("<br />\n"));
 	$("#err").scrollTop($("#err")[0].scrollHeight);
 }

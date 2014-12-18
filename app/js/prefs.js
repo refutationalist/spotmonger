@@ -34,15 +34,17 @@ $(document).ready(function() {
 
 	$("#save_prefs").click(function () {
 
-		window.opener.sm.config.jack_ports     = $("#jack_ports").val();
-		window.opener.sm.config.cue_command    = $("#cue_command").val();
-		window.opener.sm.config.state_file     = $("#state_file").val();
-		window.opener.sm.config.jack_noconnect = $("#jack_noconnect").prop("checked");
+		var newconfig = {};
+
+		newconfig.jack_ports     = $("#jack_ports").val();
+		newconfig.cue_command    = $("#cue_command").val();
+		newconfig.state_file     = $("#state_file").val();
+		newconfig.jack_noconnect = $("#jack_noconnect").prop("checked");
 
 		window.opener.sm.show_info("Saved.  Restart for changes to take effect.");
 
 
-		window.opener.sm.save_config();
+		window.opener.sm.save_config(newconfig);
 		window.close();
 	});
 });

@@ -14,7 +14,7 @@ const overflow_opts = {
 
 
 const default_config = {
-	jack_ports:     "system:playback_[12]",
+	jack_ports:     "system.*playback_[12]",
 	jack_noconnect: false,
 	cue_command:    "",
 	state_file:     ""
@@ -29,7 +29,7 @@ var mpl  = false; // needs to be instanced after reading prefs
 var sm = { };
 
 // windows
-sm.logs_window  = false;
+sm.logs_window  = 0; // since this can be opened rapidly several times, we need three states
 sm.time_window  = false;
 sm.prefs_window = false;
 
@@ -58,7 +58,9 @@ sm.init = function() {
 
 	sm.load_config();
 
-	mpl  = new MPlayerControl("/usr/bin/mplayer", "test.*meter_[1-2]");
+	var ports = (sm.config.jack_noconnect) ? "noconnect" : sm.config.jack_ports;
+
+	mpl  = new MPlayerControl("/usr/bin/mplayer", ports);
 	mpl.report_error  = sm.report_error;
 	cart.report_error = sm.report_error;
 
@@ -110,6 +112,31 @@ sm.init = function() {
 		}
 
 	});
+
+
+	if (sm.config.state_file != "") {
+
+		setInterval(function() {
+
+			try {
+				var dumpstate = mpl.state;
+
+				dumpstate.loaded = sm.loaded
+
+				if (sm.loaded != false) {
+					dumpstate.cartinfo = cart.getCartInfo(sm.loaded);
+				}
+				
+
+				require('fs').writeFileSync(sm.config.state_file,
+											JSON.stringify(dumpstate, null, 4));
+			} catch (e) {
+				sm.report_error("State File Error: "+e);
+			}
+		}, 500);
+
+
+	}
 
 
 
@@ -166,7 +193,32 @@ sm.loop = function() {
 
 			var diff = cart.carts[id].start_at - (Date.now() / 1000);
 			if (diff <= 0) {
-				sm.load_cart_id(id, true);
+
+				if (sm.config.cue_command != "") {
+
+					try {
+						require('child_process').exec(sm.config.cue_command, 
+													  function(err, stdout, stderr) {
+
+							if (err) sm.report_error("Cue Command Err: "+err);
+							if (stderr) sm.report_error("Cue Command STDERR: "+stderr);
+
+							sm.load_cart_id(id, true);
+
+
+						});
+					} catch (e) {
+						sm.report_error("Cue Command Exec Failure: "+e);
+						sm.load_cart_id(id, true);
+					}
+
+
+				} else {
+					sm.load_cart_id(id, true);
+				}
+
+
+
 				delete cart.carts[id].start_at;
 
 			} else {
@@ -198,10 +250,11 @@ sm.report_error = function(line) {
 
 sm.show_errorwindow = function() {
 
-	if (sm.logs_open == true) {
+	if (sm.logs_open == 2) {
 		sm.logs_window.window.put_logs();
 
-	} else {
+	} else if (sm.logs_open == 0) {
+		sm.logs_open = 1;
 		sm.logs_window = sm.gui.Window.open('errlog.html',
 													   {
 														   width: 470,
@@ -212,15 +265,22 @@ sm.show_errorwindow = function() {
 														   focus: true
 													   }
 													  );
-		sm.logs_open = true;
+
+		sm.logs_window.on('loaded', function() {
+			sm.logs_open = 2;
+		});
 
 		sm.logs_window.on('close', function() {
-			sm.logs_open = false;
+			sm.logs_open = 0;
 			this.close(true);
 
 		});
 
 
+	} else if (sm.logs_open == 1) {
+		console.log("error log fired, but we're waiting for the window to open");
+	} else {
+		console.error("show_errorwindow unknown state");
 	}
 
 }
@@ -488,10 +548,10 @@ sm.load_config = function() {
 }
 
 
-sm.save_config = function() {
+sm.save_config = function(config) {
 
 	try {
-		require('fs').writeFileSync(CONFIG_FILE, JSON.stringify(sm.config, null, 4));
+		require('fs').writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 4));
 	} catch (e) {
 		sm.report_error("Could not save config file: "+e);
 	}
