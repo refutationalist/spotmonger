@@ -193,7 +193,10 @@ CartFiles.prototype.runtime     = function(id, callback) {
 
 	if (typeof(this.carts[id]) != "object") return;
 
-	if (this.carts[id].runtime != 0) callback(id);
+	if (this.carts[id].runtime != 0) {
+		callback(id);
+		return;
+	}
 
 	this.carts[id].rtwait  = [ ];
 
