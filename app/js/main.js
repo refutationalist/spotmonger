@@ -1,7 +1,8 @@
 
 const PAUSE        = "&#xf04c;",
 	  PLAY         = "&#xf04b;",
-	  SILENCE_FILE = 'CARTAMOC.SILENCE'; // convenience defines
+	  SILENCE_FILE = 'CARTAMOC.SILENCE',
+	  CONFIG_FILE  = process.env.HOME+"/.spotmongerrc"; // convenience defines
 
 
 
@@ -12,6 +13,14 @@ const overflow_opts = {
 				    }; // overflow display options
 
 
+const default_config = {
+	jack_ports:     "system:playback_[12]",
+	jack_noconnect: false,
+	cue_command:    "",
+	state_file:     ""
+}; // default configuration
+
+
 
 // instances
 var cart = new CartFiles();
@@ -20,8 +29,8 @@ var mpl  = false; // needs to be instanced after reading prefs
 var sm = { };
 
 // windows
-sm.logs_window = false;
-sm.time_window = false;
+sm.logs_window  = false;
+sm.time_window  = false;
 sm.prefs_window = false;
 
 // window open flags -- detecting windows in NW is non-obvious, so here's Yet Another Hack.
@@ -42,8 +51,12 @@ sm.silence_file = process.cwd()+'/silence.mp3';
 sm.gui = require('nw.gui');
 sm.path = require('path');
 
+sm.config = {}; // default configuration
+
 
 sm.init = function() {
+
+	sm.load_config();
 
 	mpl  = new MPlayerControl("/usr/bin/mplayer", "test.*meter_[1-2]");
 	mpl.report_error  = sm.report_error;
@@ -444,6 +457,44 @@ sm.show_info = function(str) {
 						$("#info").fadeOut(500);
 		}, 3000);
 	});
+
+}
+
+// config file options
+
+sm.load_config = function() {
+
+	try {
+		var string = require('fs').readFileSync(CONFIG_FILE, 'utf-8');
+		var tmp_config = JSON.parse(string);
+
+		if (typeof(tmp_config) == "object") {
+
+			for (var k in default_config) {
+				sm.config[k] = (tmp_config[k]) ? tmp_config[k] : default_config[k];
+			}
+		
+		} else {
+			sm.config = default_config;
+		}
+
+	} catch (e) {
+		sm.report_error("Could not load config: "+e);
+		sm.config = default_config;
+	}
+
+	console.log("loaded config", sm.config);
+
+}
+
+
+sm.save_config = function() {
+
+	try {
+		require('fs').writeFileSync(CONFIG_FILE, JSON.stringify(sm.config, null, 4));
+	} catch (e) {
+		sm.report_error("Could not save config file: "+e);
+	}
 
 }
 
