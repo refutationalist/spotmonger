@@ -123,10 +123,8 @@ sm.init = function() {
 				var dumpstate = mpl.state;
 
 				dumpstate.loaded = sm.loaded
+				dumpstate.carts  = cart.carts;
 
-				if (sm.loaded != false) {
-					dumpstate.cartinfo = cart.getCartInfo(sm.loaded);
-				}
 				
 
 				require('fs').writeFileSync(sm.config.state_file,
