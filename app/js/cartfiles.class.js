@@ -31,32 +31,101 @@ CartFiles.prototype.load        = function(file, callback) {
 	this.fs.mkdirSync(newdir);
 	if (!this.fs.statSync(newdir).isDirectory()) return false;
 
-	this.cp.exec(this.tar+" -C "+newdir+" -xf '"+file+"'", function(err, stdout, stderr) {
-		if (err) {
-			this.report_error("CF Load error: "+err);
+	if (file.match(/cart$/)) { // if cart file
 
-			return;
-		}
-		if (stderr) this.report_error("CF Load stderr:" + stderr);
+		this.cp.exec(this.tar+" -C "+newdir+" -xf '"+file+"'", function(err, stdout, stderr) {
+			if (err) {
+				this.report_error("CF Load error: "+err);
 
-		var cart_data = JSON.parse(this.fs.readFileSync(newdir+"/cart.json"));
+				return;
+			}
+			if (stderr) this.report_error("CF Load stderr:" + stderr);
 
-		if (typeof(cart_data) != "object"  ||
-			cart_data.name    == undefined ||
-			cart_data.files   == undefined ||
-			typeof(callback)  != "function") {
-			this.ditch(id);
-			return;
-		}
+			var cart_data = JSON.parse(this.fs.readFileSync(newdir+"/cart.json"));
 
-
-		cart_data.file    = file;
-		cart_data.runtime = 0;
-		this.carts[id]    = cart_data;
-		callback(id);
+			if (typeof(cart_data) != "object"  ||
+				cart_data.name    == undefined ||
+				cart_data.files   == undefined ||
+				typeof(callback)  != "function") {
+				this.ditch(id);
+				return;
+			}
 
 
-	}.bind(this));
+			cart_data.file    = file;
+			cart_data.runtime = 0;
+			this.carts[id]    = cart_data;
+			callback(id);
+
+
+		}.bind(this));
+
+	} else { // if regular audio file
+		console.log("this is an audio file, oddly.");
+
+		var match   = /(\..+)$/.exec(file);
+		var newfile = this.uniqid() + match[0];
+
+		console.log("file ext", match, newfile);
+
+		this.fs.createReadStream(file).pipe(this.fs.createWriteStream(newdir + '/' + newfile));
+
+		
+		var cmd = this.ffprobe + " " +
+				  this.ffprobe_flags + " '"+
+				  newdir + '/' + newfile+"'";
+
+
+		this.cp.exec(cmd, function(err, stdout, stderr) {
+
+			console.log(typeof(this.report_error));
+			if (stderr) this.report_error("CF runtime stderr: "+stderr);
+			if (err) this.report_error("CF runtime: "+err);
+
+					
+			var ffjson = JSON.parse(stdout);
+
+			if (ffjson.format) {
+
+				var cart_data      = {};
+
+				/*
+				cart_data.name     = (typeof(ffjson.format.tags.title) != 'undefined') ? 
+										ffjson.format.tags.title : require('path').basename(file);
+										*/
+				cart_data.name = require('path').basename(file);
+				for (var k in ffjson.format.tags) {
+
+					if (k.toLowerCase() == "title") 
+						cart_data.name = ffjson.format.tags[k];
+
+
+				}
+
+
+				cart_data.files    = new Array(newfile);
+				cart_data.runtime  = parseFloat(ffjson.format.duration);
+				cart_data.single   = true;
+
+				this.carts[id] = cart_data;
+
+				console.log("fake cart data", cart_data);
+				console.log("duration", ffjson.format.duration, cart_data.runtime);
+			
+				callback(id);
+				
+
+
+
+			} else {
+				this.ditch(id);
+			}
+
+
+		}.bind(this));
+
+
+	}
 
 
 
@@ -124,6 +193,8 @@ CartFiles.prototype.runtime     = function(id, callback) {
 
 	if (typeof(this.carts[id]) != "object") return;
 
+	if (this.carts[id].runtime != 0) callback(id);
+
 	this.carts[id].rtwait  = [ ];
 
 	for (fidx in this.carts[id].files) {
@@ -158,6 +229,7 @@ CartFiles.prototype.runtime     = function(id, callback) {
 	}
 
 }
+
 
 
 

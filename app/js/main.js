@@ -64,6 +64,7 @@ sm.init = function() {
 	mpl.report_error  = sm.report_error;
 	cart.report_error = sm.report_error;
 
+
 	mpl.init(function() { 
 		console.log("In main init");
 		setInterval(sm.loop, 500);
@@ -378,15 +379,16 @@ sm.load_cart_id = function(id, autoplay) {
 	$("#carts .state").html('');
 
 	$('#'+id+' .state').html("Loading");
-
-	mpl.loadlist(files, function() {
-		$('#'+id+' .state').html("Loaded");
-		$('#carts .cart').removeClass("loaded");
-		$('#'+id).addClass("loaded");
-		sm.loaded = id;
-		if (autoplay == true) {
-			mpl.playpause();
-		}
+	mpl.stop(function() {
+		mpl.loadlist(files, function() {
+			$('#'+id+' .state').html("Loaded");
+			$('#carts .cart').removeClass("loaded");
+			$('#'+id).addClass("loaded");
+			sm.loaded = id;
+			if (autoplay == true) {
+				mpl.playpause();
+			}
+		});
 	});
 
 
@@ -475,9 +477,19 @@ sm.update_track_display = function() {
 	$("#play").html((mpl.state.pause == "no") ? PAUSE : PLAY);
 
 	// determine title and show
+
+	var trackname = mpl.state.filename;
+
+	if (cart.carts[sm.loaded].single == true) {
+		trackname = '';
+	} else if (mpl.state.meta_title != "") {
+		trackname = mpl.state.meta_title;
+	}
+	/*
 	var trackname = (mpl.state.meta_title == "") ? 
 					sm.path.basename(mpl.state.filename) :
 					mpl.state.meta_title;
+					*/
 
 	if (trackname != $("p.trackname").text()) {
 		$("p.trackname").remove();
