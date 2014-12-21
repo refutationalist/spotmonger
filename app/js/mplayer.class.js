@@ -2,7 +2,7 @@
 var MPlayerControl = function(mplayer, ports) {
 	this.mplayer         = mplayer;
 	this.flags           = [ '-slave', '-idle', '-noconfig', 'all',  
-							 '-quiet', '-nolirc', '-demuxer', 'lavf' ];
+							 '-quiet', '-nolirc', '-vo', 'null', '-demuxer', 'lavf' ];
 	this.status_interval = 100;
 
 	this.online          = false;

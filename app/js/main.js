@@ -195,22 +195,7 @@ sm.loop = function() {
 
 				if (sm.config.cue_command != "") {
 
-					try {
-						require('child_process').exec(sm.config.cue_command, 
-													  function(err, stdout, stderr) {
-
-							if (err) sm.report_error("Cue Command Err: "+err);
-							if (stderr) sm.report_error("Cue Command STDERR: "+stderr);
-
-							sm.load_cart_id(id, true);
-
-
-						});
-					} catch (e) {
-						sm.report_error("Cue Command Exec Failure: "+e);
-						sm.load_cart_id(id, true);
-					}
-
+					sm.do_cue_fire(id);
 
 				} else {
 					sm.load_cart_id(id, true);
@@ -230,6 +215,24 @@ sm.loop = function() {
 
 	}
 
+}
+
+sm.do_cue_fire = function(id) {
+	try {
+		require('child_process').exec(sm.config.cue_command, 
+									  function(err, stdout, stderr) {
+
+			if (err)    sm.report_error("Cue Command Err: "+err);
+			if (stderr) sm.report_error("Cue Command STDERR: "+stderr);
+
+			sm.load_cart_id(id, true);
+
+
+		});
+	} catch (e) {
+		sm.report_error("Cue Command Exec Failure: "+e);
+		sm.load_cart_id(id, true);
+	}
 }
 
 sm.report_error = function(line) {
@@ -418,9 +421,8 @@ sm.add_cart = function(evt) {
 
 			});
 
-			$(".cart").unbind('click');
-			$(".cart").on('click', sm.load_cart);
-			$(".cart .timeset").on('click', sm.set_cuetime);
+			$("#"+id).on('click', sm.load_cart);
+			$("#"+id+" .timeset").on('click', sm.set_cuetime);
 
 		});
 

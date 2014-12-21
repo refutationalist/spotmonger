@@ -1,7 +1,7 @@
 # Maintainer: Sam Mulvey <sam@tacomatelematics.com>
 # AS YET UNRELEASED
 pkgname=spotmonger
-pkgver=0.99
+pkgver=1.0.1
 pkgrel=1
 pkgdesc="interface to music on console to work as a cartplayer"
 arch=('x86_64' 'i686')
@@ -11,6 +11,7 @@ groups=('studmufn')
 depends=('node-webkit' 'php' 'ffmpeg' 'tar' 'mplayer')
 changelog=
 replaces=('cartamoc')
+conflicts=('cartamoc')
 source=(spotmonger.tgz)
 noextract=(spotmonger.nw)
 install="spotmonger.install"
