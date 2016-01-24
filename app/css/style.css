@@ -332,7 +332,6 @@ div.prefs      h1 {
 	margin: 0;
 	padding: 0;
 }
-
 div.error_logs textarea,
 div.error_logs div {
 	border: 1px solid #888888;
@@ -350,23 +349,21 @@ div.error_logs div {
 	font-family: monospace;
 	overflow: scroll;
 }
-
 div.error_logs p {
-	height: 40px;
-	width: 450px;
-	margin: 3px auto;
 	position: absolute;
-	margin-left: 50%;
-	left: -225px;
-	bottom: 5px;
-}
-div.error_logs button {
-	width: 200px;
-	height: 40px;
+	bottom: 0;
+	width: 450px;
+	margin-left: 25px;
+	text-align: center;
+	padding: 0;
 }
 
-div.error_logs button:first-child {
-	margin-right: 45px;
+div.error_logs button {
+	width: 175px;
+	height: 40px;
+	display: block;
+	float: left;
+	margin-left: 50px;
 }
 
 div.time_set p {

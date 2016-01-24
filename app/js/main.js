@@ -71,7 +71,8 @@ sm.init = function() {
 		sm.loop();
 
 		sm.gui.Window.get(window).show();
-		window.resizeTo(700, 240);
+		//window.resizeTo(700, 240);
+		//setTimeout(function() { console.log("WHEEE!"); window.resizeTo(1000,1000); }, 1000);
 		
 	});
 
@@ -259,8 +260,8 @@ sm.show_errorwindow = function() {
 		sm.logs_open = 1;
 		sm.logs_window = sm.gui.Window.open('errlog.html',
 													   {
-														   width: 470,
-														   height: 400,
+														   width: 500,
+														   height: 430,
 														   toolbar: false,
 														   frame: true,
 														   position: "mouse",
@@ -297,7 +298,7 @@ sm.show_prefswindow = function() {
 		sm.prefs_window = sm.gui.Window.open('prefs.html', 
 											 {
 												 width: 616,
-												 height: 344,
+												 height: 364,
 												 toolbar: false,
 												 frame: true,
 												 position: "mouse",
