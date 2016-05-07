@@ -6,9 +6,8 @@
 	"window": {
 		"title":      "SpotMonger",
 		"icon":       "icon.png",
-		"toolbar":    false,
 		"width":      750,
-		"height":     240,
+		"height":     290,
 		"resizable":  false,
 		"show":		  false
 	},

@@ -29,7 +29,8 @@ var mpl  = false; // needs to be instanced after reading prefs
 var sm = { };
 
 // windows
-sm.logs_window  = 0; // since this can be opened rapidly several times, we need three states
+sm.logs_window  = false; // since this can be opened rapidly several times, 
+						 // we need three states
 sm.time_window  = false;
 sm.prefs_window = false;
 
@@ -48,7 +49,6 @@ sm.silence_file = process.cwd()+'/silence.mp3';
    end of a cart.   CHEEEEAP HAAAAACK! */
 
 // nw bits
-sm.gui = require('nw.gui');
 sm.path = require('path');
 
 sm.config = {}; // default configuration
@@ -69,10 +69,7 @@ sm.init = function() {
 		console.log("In main init");
 		setInterval(sm.loop, 500);
 		sm.loop();
-
-		sm.gui.Window.get(window).show();
-		//window.resizeTo(700, 240);
-		//setTimeout(function() { console.log("WHEEE!"); window.resizeTo(1000,1000); }, 1000);
+		nw.Window.get().show();
 		
 	});
 
@@ -140,15 +137,8 @@ sm.init = function() {
 
 
 
-	/* FIXME shit don't work right now * /
-	process.stdin.resume();
-	process.on('exit',              exitHandler);
-	process.on('SIGINT',            exitHandler);
-	process.on('uncaughtException', exitHandler);
-	// */
 	process.on('uncaughtException', sm.report_error);
-	
-	sm.gui.Window.get().on('close', function() {
+	nw.Window.get().on('close', function() {
 		sm.exit_handler();
 		this.close(true);
 	});
@@ -240,7 +230,9 @@ sm.report_error = function(line) {
 
 	var d = new Date();
 	sm.errors.push(d.toString() + " " + line);
+	process.stdout.write("  ##  " + d.toString() + " " + line + "\n");
 	console.error("REPORT_ERROR", line);
+
 
 	if (sm.errors_suppress == true) {
 		sm.show_info("Error encountered.  Check logs for more info.");
@@ -254,36 +246,55 @@ sm.report_error = function(line) {
 sm.show_errorwindow = function() {
 
 	if (sm.logs_open == 2) {
-		sm.logs_window.window.put_logs();
+		nw.Window.get(sm.logs_window).window.put_logs();
 
 	} else if (sm.logs_open == 0) {
 		sm.logs_open = 1;
-		sm.logs_window = sm.gui.Window.open('errlog.html',
+		sm.logs_window = nw.Window.open('errlog.html', 
+
 													   {
 														   width: 500,
 														   height: 430,
-														   toolbar: false,
 														   frame: true,
 														   position: "mouse",
 														   focus: true
+													   },
+													   function (win) {
+															win.on('loaded', function() {
+																sm.logs_open = 2;
+															});
+
+															win.on('close', function() {
+																try {
+																	sm.logs_open = 0;
+																	this.close(true);
+																} catch (e) {
+																	process.stdout.write("FAIL: " + e + "\n");
+																}
+															});
 													   }
 													  );
 
-		sm.logs_window.on('loaded', function() {
+		/*
+		nw.Window.get(sm.logs_window).on('loaded', function() {
+			process.stdout.write("loaded hit\n");
 			sm.logs_open = 2;
 		});
 
-		sm.logs_window.on('close', function() {
+		nw.Window.get(sm.logs_window).on('close', function() {
+			process.stdout.write("close hit\n");
 			sm.logs_open = 0;
 			this.close(true);
 
 		});
+		*/
 
 
 	} else if (sm.logs_open == 1) {
-		console.log("error log fired, but we're waiting for the window to open");
+		process.stdout.write("error log fired, but still waiting to open\n");
+		
 	} else {
-		console.error("show_errorwindow unknown state");
+		process.stdout.write("show_errorwindow strange state\n");
 	}
 
 }
@@ -295,23 +306,19 @@ sm.show_prefswindow = function() {
 
 	if (sm.prefs_open == false) {
 
-		sm.prefs_window = sm.gui.Window.open('prefs.html', 
+		sm.prefs_window = nw.Window.open('prefs.html', 
 											 {
 												 width: 616,
 												 height: 364,
-												 toolbar: false,
 												 frame: true,
 												 position: "mouse",
 												 focus: true
+											 }, 
+											 function(win) {
+												sm.prefs_open = false;
+												win.close(true);												 
 											 });
 
-
-		sm.prefs_window.on('close', function() {
-
-			sm.prefs_open = false;
-			this.close(true);
-
-		});
 
 	}
 
@@ -328,25 +335,27 @@ sm.set_cuetime = function(e) {
 
 		console.log("Getting Time Window", id, name);
 
-		sm.time_window = sm.gui.Window.open('settime.html',
+		//sm.time_window = sm.gui.Window.open('settime.html',
+		sm.time_window = nw.Window.open('settime.html', 
 										  {
 											  width: 450,
 											  height: 540,
 											  focus: true,
-											  toolbar: false,
 											  frame: true,
 											  position: 'mouse'
 										  }
 										 );
 
-		sm.time_window.on('loaded', function() {
+		//sm.time_window.on('loaded', function() {
+		nw.Window.get(sm.time_window).on('loaded', function() {
 			sm.time_window.window.set_info(id, name, cart);
 			if (cart.carts[id].start_at) 
 				sm.time_window.window.set_time(cart.carts[id].start_at);
 
 		});
 
-		sm.time_window.on('close', function() {
+		//sm.time_window.on('close', function() {
+		nw.Window.get(sm.time_window).on('close', function() {
 			sm.time_open = false;
 			this.close(true);
 		});
@@ -608,4 +617,21 @@ sm.width_over = function(ele) {
 
 $(document).ready(function() {
 	sm.init();
+
+
+	
+	$("#flog").click(function () {
+		console.log("FLOG!");
+		process.stdout.write("WOOOOO");
+		sm.report_error("Flog!");
+
+	});
+
+	setInterval(function() {
+		process.stdout.write("THINGS: "+sm.logs_open+"\n");
+
+	}, 2000);
+
+
 });
+

@@ -33,9 +33,19 @@ body {
 	margin: 0;
 }
 
+#debug {
+    position: absolute;
+    border: 1px solid black;
+    top: 240px;
+    width: 730px;
+    left: 10px;
+    height: 40px;
+}
+
 #main {
 	width: 750px;
-	height: 240px;
+	/* height: 240px; */
+	height: 290px; /* DEBUG */
 	background: linear-gradient(to bottom,  #eeeeee 0%,#cccccc 100%);
 	position: relative;
 	
