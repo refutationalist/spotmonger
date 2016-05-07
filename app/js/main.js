@@ -41,9 +41,6 @@ sm.prefs_open = false;
 
 
 // data
-sm.errors = new Array(); // errors from mplayer
-sm.errors_suppress = false;
-sm.loaded = false;
 sm.silence_file = process.cwd()+'/silence.mp3';
 /* The silence file is a placeholder file so I know I've reached the
    end of a cart.   CHEEEEAP HAAAAACK! */
@@ -143,7 +140,6 @@ sm.init = function() {
 		this.close(true);
 	});
 
-	//setInterval(function(){console.log(mpl.state);},1000);
 
 
 }
@@ -225,80 +221,6 @@ sm.do_cue_fire = function(id) {
 		sm.load_cart_id(id, true);
 	}
 }
-
-sm.report_error = function(line) {
-
-	var d = new Date();
-	sm.errors.push(d.toString() + " " + line);
-	process.stdout.write("  ##  " + d.toString() + " " + line + "\n");
-	console.error("REPORT_ERROR", line);
-
-
-	if (sm.errors_suppress == true) {
-		sm.show_info("Error encountered.  Check logs for more info.");
-	} else {
-		sm.show_errorwindow();
-	}
-
-}
-
-
-sm.show_errorwindow = function() {
-
-	if (sm.logs_open == 2) {
-		nw.Window.get(sm.logs_window).window.put_logs();
-
-	} else if (sm.logs_open == 0) {
-		sm.logs_open = 1;
-		sm.logs_window = nw.Window.open('errlog.html', 
-
-													   {
-														   width: 500,
-														   height: 430,
-														   frame: true,
-														   position: "mouse",
-														   focus: true
-													   },
-													   function (win) {
-															win.on('loaded', function() {
-																sm.logs_open = 2;
-															});
-
-															win.on('close', function() {
-																try {
-																	sm.logs_open = 0;
-																	this.close(true);
-																} catch (e) {
-																	process.stdout.write("FAIL: " + e + "\n");
-																}
-															});
-													   }
-													  );
-
-		/*
-		nw.Window.get(sm.logs_window).on('loaded', function() {
-			process.stdout.write("loaded hit\n");
-			sm.logs_open = 2;
-		});
-
-		nw.Window.get(sm.logs_window).on('close', function() {
-			process.stdout.write("close hit\n");
-			sm.logs_open = 0;
-			this.close(true);
-
-		});
-		*/
-
-
-	} else if (sm.logs_open == 1) {
-		process.stdout.write("error log fired, but still waiting to open\n");
-		
-	} else {
-		process.stdout.write("show_errorwindow strange state\n");
-	}
-
-}
-
 
 sm.show_prefswindow = function() {
 
