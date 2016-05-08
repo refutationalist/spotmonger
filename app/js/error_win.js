@@ -22,7 +22,6 @@ $(document).ready(function() {
 	});
 
 	setInterval(function() {
-		count++;
 		if (curlen != 
 			window.opener.error.length) {
 			curlen = window.opener.error.length;

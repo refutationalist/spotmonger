@@ -13,12 +13,6 @@ const overflow_opts = {
 				    }; // overflow display options
 
 
-const default_config = {
-	jack_ports:     "system.*playback_[12]",
-	jack_noconnect: false,
-	cue_command:    "",
-	state_file:     ""
-}; // default configuration
 
 
 
@@ -28,16 +22,13 @@ var mpl  = false; // needs to be instanced after reading prefs
 
 var sm = { };
 
+sm.loaded = false;
+
 // windows
-sm.logs_window  = false; // since this can be opened rapidly several times, 
-						 // we need three states
 sm.time_window  = false;
-sm.prefs_window = false;
 
 // window open flags -- detecting windows in NW is non-obvious, so here's Yet Another Hack.
-sm.logs_open  = false;
 sm.time_open  = false;
-sm.prefs_open = false;
 
 
 // data
@@ -48,31 +39,26 @@ sm.silence_file = process.cwd()+'/silence.mp3';
 // nw bits
 sm.path = require('path');
 
-sm.config = {}; // default configuration
 
 
 sm.init = function() {
 
-	sm.load_config();
 
-	var ports = (sm.config.jack_noconnect) ? "noconnect" : sm.config.jack_ports;
+	var ports = (prefs.jack_noconnect) ? "noconnect" : prefs.jack_ports;
 
 	mpl  = new MPlayerControl("/usr/bin/mplayer", ports);
-	mpl.report_error  = sm.report_error;
-	cart.report_error = sm.report_error;
+	mpl.report_error  = error.report;
+	cart.report_error = error.report;
 
 
 	mpl.init(function() { 
-		console.log("In main init");
+		error.note("In main init");
 		setInterval(sm.loop, 500);
 		sm.loop();
 		nw.Window.get().show();
 		
 	});
 
-	$("#conf").click(function() {
-		sm.show_prefswindow();
-	});
 
 
 	// element bindings
@@ -110,6 +96,7 @@ sm.init = function() {
 	});
 
 
+	/* FIXME: reimplement statefile
 	if (sm.config.state_file != "") {
 
 		setInterval(function() {
@@ -125,16 +112,17 @@ sm.init = function() {
 				require('fs').writeFileSync(sm.config.state_file,
 											JSON.stringify(dumpstate, null, 4));
 			} catch (e) {
-				sm.report_error("State File Error: "+e);
+				error.report("State File Error: "+e);
 			}
 		}, 500);
 
 
 	}
+	*/
 
 
 
-	process.on('uncaughtException', sm.report_error);
+	process.on('uncaughtException', error.report);
 	nw.Window.get().on('close', function() {
 		sm.exit_handler();
 		this.close(true);
@@ -180,7 +168,7 @@ sm.loop = function() {
 			var diff = cart.carts[id].start_at - (Date.now() / 1000);
 			if (diff <= 0) {
 
-				if (sm.config.cue_command != "") {
+				if (prefs.cue_command != "") {
 
 					sm.do_cue_fire(id);
 
@@ -206,44 +194,20 @@ sm.loop = function() {
 
 sm.do_cue_fire = function(id) {
 	try {
-		require('child_process').exec(sm.config.cue_command, 
+		require('child_process').exec(prefs.cue_command, 
 									  function(err, stdout, stderr) {
 
-			if (err)    sm.report_error("Cue Command Err: "+err);
-			if (stderr) sm.report_error("Cue Command STDERR: "+stderr);
+			if (err)    error.report("Cue Command Err: "+err);
+			if (stderr) error.report("Cue Command STDERR: "+stderr);
 
 			sm.load_cart_id(id, true);
 
 
 		});
 	} catch (e) {
-		sm.report_error("Cue Command Exec Failure: "+e);
+		error.report("Cue Command Exec Failure: "+e);
 		sm.load_cart_id(id, true);
 	}
-}
-
-sm.show_prefswindow = function() {
-
-
-
-	if (sm.prefs_open == false) {
-
-		sm.prefs_window = nw.Window.open('prefs.html', 
-											 {
-												 width: 616,
-												 height: 364,
-												 frame: true,
-												 position: "mouse",
-												 focus: true
-											 }, 
-											 function(win) {
-												sm.prefs_open = false;
-												win.close(true);												 
-											 });
-
-
-	}
-
 }
 
 
@@ -255,7 +219,7 @@ sm.set_cuetime = function(e) {
 		var id = $(this).parent().attr('id');
 		var name = $('#'+id+' .name').html();
 
-		console.log("Getting Time Window", id, name);
+		error.note("Getting Time Window", id, name);
 
 		//sm.time_window = sm.gui.Window.open('settime.html',
 		sm.time_window = nw.Window.open('settime.html', 
@@ -293,7 +257,7 @@ sm.set_cuetime = function(e) {
 // subsystem management
 
 sm.exit_handler = function() {
-	console.log("in cleanup");
+	error.note("in cleanup");
 	cart.cleanup();
 	mpl.quit();
 }
@@ -464,44 +428,6 @@ sm.show_info = function(str) {
 
 }
 
-// config file options
-
-sm.load_config = function() {
-
-	try {
-		var string = require('fs').readFileSync(CONFIG_FILE, 'utf-8');
-		var tmp_config = JSON.parse(string);
-
-		if (typeof(tmp_config) == "object") {
-
-			for (var k in default_config) {
-				sm.config[k] = (tmp_config[k]) ? tmp_config[k] : default_config[k];
-			}
-		
-		} else {
-			sm.config = default_config;
-		}
-
-	} catch (e) {
-		sm.report_error("Could not load config: "+e);
-		sm.config = default_config;
-	}
-
-	console.log("loaded config", sm.config);
-
-}
-
-
-sm.save_config = function(config) {
-
-	try {
-		require('fs').writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 4));
-	} catch (e) {
-		sm.report_error("Could not save config file: "+e);
-	}
-
-}
-
 // helper functions
 
 sm.int_to_time = function(str) {
@@ -538,21 +464,25 @@ sm.width_over = function(ele) {
 // now, talk to jquery.
 
 $(document).ready(function() {
+	// bind prefs
+	prefs.load();
+	$("#conf").click(function() { prefs.pop(); error.report("calling prefs"); });
+
+
 	sm.init();
 
 
 	
 	$("#flog").click(function () {
-		console.log("FLOG!");
-		process.stdout.write("WOOOOO");
-		sm.report_error("Flog!");
+		error.note("note FLOG!");
+		process.stdout.write("WOOOOO\n");
+		error.report("report Flog!");
 
 	});
 
-	setInterval(function() {
-		process.stdout.write("THINGS: "+sm.logs_open+"\n");
 
-	}, 2000);
+	nw.Window.get().show();
+	
 
 
 });

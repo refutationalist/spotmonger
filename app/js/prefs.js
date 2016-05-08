@@ -1,50 +1,77 @@
 
+var prefs = {
+	jack_ports:     "system.*playback_[12]", // port regex to connect to.  passed to mplayer.
+	jack_noconnect: false, // or, just don't connect and let something else handle it
+	cue_command:    "", // command to call when countdown reaches zero
+	state_file:     "", // json state file for external usage
 
-$(document).ready(function() {
 
-	//config.log(window.opener.sm.config);
+	config_file:   process.env.HOME+"/.spotmongerrc",
+	is_open: false,
+	win: false,
 
-	$("#jack_ports").val(window.opener.sm.config.jack_ports);
-	$("#cue_command").val(window.opener.sm.config.cue_command);
-	$("#state_file").val(window.opener.sm.config.state_file);
+	load: function() {
 
-	if (window.opener.sm.config.jack_noconnect == true) {
-		$("#jack_noconnect").prop("checked", true);
-		$("#jack_ports").prop("disabled", true);
-	}
+		try {
+			var string = require('fs').readFileSync(this.config_file, 'utf-8');
+			var tmp_config = JSON.parse(string);
 
-	$("#jack_noconnect").change(function() {
+			if (typeof(tmp_config) == "object") {
 
-		var state;
+				for (var k in tmp_config) {
+					if (tmp_config[k]) this[k] = tmp_config[k]; // is there a less stupid way to do this?
+				}
+		
+			} // do nothing because the defaults are already set
 
-		if ($("#jack_noconnect").prop('checked') == true) {
-			state = true;
-		} else {
-			state = false;
+		} catch (e) {
+			error.report("Could not load config: "+e);
 		}
 
-		$("#jack_ports").prop("disabled", state);
 
-	});
+	}, 
+
+	save: function() {
+
+		try {
+			var cfg = {
+				jack_ports:     this.jack_ports,
+				jack_noconnect: this.jack_noconnect,
+				cue_command:    this.cue_command,
+				state_file:     this.state_file
+			};
+
+			require('fs').writeFileSync(CONFIG_FILE, JSON.stringify(cfg, null, 4));
+		} catch (e) {
+			error.report("Could not save config file: "+e);
+		}
+
+	},
+
+	pop: function() {
+
+		if (this.is_open == false) {
+				this.is_open = true;
+				this.win = nw.Window.open('prefs_win.html', 
+										  {
+											width: 616,
+											height: 364,
+											frame: true,
+											position: "mouse",
+											focus: true
+										  }, 
+										  function (win) {
+											  win.on('closed', function() {
+												  prefs.is_open = false;
+											  });
+											  
+										  });
 
 
-	$("#show_logs").click(function() {
-		window.opener.sm.show_errorwindow();
-	});
 
-	$("#save_prefs").click(function () {
-
-		var newconfig = {};
-
-		newconfig.jack_ports     = $("#jack_ports").val();
-		newconfig.cue_command    = $("#cue_command").val();
-		newconfig.state_file     = $("#state_file").val();
-		newconfig.jack_noconnect = $("#jack_noconnect").prop("checked");
-
-		window.opener.sm.show_info("Saved.  Restart for changes to take effect.");
+		}
+	}
 
 
-		window.opener.sm.save_config(newconfig);
-		window.close();
-	});
-});
+
+}

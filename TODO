@@ -1,0 +1,10 @@
+  * pick a safer/saner way to handle
+    - cart/tar file handling
+	- mplayer location
+	- config file location
+  * Add "multicart" with card files?
+    - the idea being that we can include a group of breaks with relative cueing time.
+  * Pause the cue clock
+  * "soundboard mode" for playing clips faster during shows
+  * some sanity checking in the config file
+  * external queueing (http server, I assume)

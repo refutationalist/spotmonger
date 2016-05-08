@@ -41,7 +41,7 @@ var error = {
 	pop_window: function() { // POP open the error window
 		if (this.state == 0) {
 			this.state = 1;
-			this.win = nw.Window.open('errlog.html',
+			this.win = nw.Window.open('error_win.html',
 								 {
 									 width:    this.ERRWIN_WIDTH,
 									 height:   this.ERRWIN_HEIGHT,
