@@ -1,7 +1,7 @@
 {
 	"name":        "com.tacomatelematics.studmufn.spotmonger",
 	"description": "music-on-console front end as cart player",
-	"version":     "1.0.1",
+	"version":     "1.1.0",
 	"main":        "spotmonger.html",
 	"window": {
 		"title":      "SpotMonger",

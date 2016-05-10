@@ -1,7 +1,7 @@
-# Maintainer: Sam Mulvey <sam@tacomatelematics.com>
+# Maintainer: Sam Mulvey <github@refutationalist.com>
 # AS YET UNRELEASED
 pkgname=spotmonger
-pkgver=1.0.2
+pkgver=1.1.0
 pkgrel=1
 pkgdesc="interface to music on console to work as a cartplayer"
 arch=('x86_64' 'i686')
