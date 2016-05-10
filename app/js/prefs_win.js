@@ -2,8 +2,6 @@
 
 $(document).ready(function() {
 
-	//config.log(window.opener.sm.config);
-
 	$("#jack_ports").val(window.opener.prefs.jack_ports);
 	$("#cue_command").val(window.opener.prefs.cue_command);
 	$("#state_file").val(window.opener.prefs.state_file);

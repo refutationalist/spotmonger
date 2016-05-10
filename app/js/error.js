@@ -16,35 +16,49 @@ var error = {
 
 	report: function(text) { // REPORT an error
 		var d = new Date();
-		this.collected.push(d.toString() + " " + text);
-		this.length = this.collected.length ,
+		try {
+			error.collected.push(d.toString() + " " + text);
+		} catch (e) {
+			error.collected = new Array();
+			error.collected.push(d.toString() + " error log reinit");
+			error.collected.push(d.toString() + " " + text);
+		}
+		error.length = error.collected.length ,
 		process.stderr.write(d.toString() + " " + text + "\n");
 
 
-		if (this.suppress == true) {	
+		if (error.suppress == true) {	
 			// do something there
 			console.error("REPORT_ERROR", text, "suppressed");
+			sm.show_info("Error suppressed.  See logs for more information.");
+			
 		} else {
 			console.error("REPORT_ERROR", text);
-			this.pop_window();
+			error.pop_window();
 		}
 
 	},
 
 	note: function(text) { // NOTE a thing that may or may not be a minor error
 		var d = new Date();
-		this.collected.push(d.toString() + " " + text);
-		this.length = this.collected.length ,
+		try {
+			error.collected.push(d.toString() + "[NOTICE] " + text);
+		} catch (e) {
+			error.collected = new Array();
+			error.collected.push(d.toString() + " error log reinit");
+			error.collected.push(d.toString() + "[NOTICE] " + text);
+		}
+		error.length = error.collected.length ,
 		process.stderr.write(d.toString() + " " + text + "\n");
 	},
 
 	pop_window: function() { // POP open the error window
-		if (this.state == 0) {
-			this.state = 1;
-			this.win = nw.Window.open('error_win.html',
+		if (error.state == 0) {
+			error.state = 1;
+			error.win = nw.Window.open('error_win.html',
 								 {
-									 width:    this.ERRWIN_WIDTH,
-									 height:   this.ERRWIN_HEIGHT,
+									 width:    error.ERRWIN_WIDTH,
+									 height:   error.ERRWIN_HEIGHT,
 									 frame:    true,
 									 position: 'mouse',
 									 focus:    true
@@ -62,9 +76,6 @@ var error = {
 		}
 	}
 
-	//function exit_handler() { // where the hell else do I put this?
-//
-	//}
 
 };
 

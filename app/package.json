@@ -7,7 +7,7 @@
 		"title":      "SpotMonger",
 		"icon":       "icon.png",
 		"width":      750,
-		"height":     290,
+		"height":     240,
 		"resizable":  false,
 		"show":		  false
 	},

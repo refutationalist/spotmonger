@@ -41,7 +41,7 @@ var prefs = {
 				state_file:     this.state_file
 			};
 
-			require('fs').writeFileSync(CONFIG_FILE, JSON.stringify(cfg, null, 4));
+			require('fs').writeFileSync(prefs.config_file, JSON.stringify(cfg, null, 4));
 		} catch (e) {
 			error.report("Could not save config file: "+e);
 		}

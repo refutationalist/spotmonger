@@ -44,8 +44,7 @@ body {
 
 #main {
 	width: 750px;
-	/* height: 240px; */
-	height: 290px; /* DEBUG */
+	height: 240px;
 	background: linear-gradient(to bottom,  #eeeeee 0%,#cccccc 100%);
 	position: relative;
 	

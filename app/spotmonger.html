@@ -5,13 +5,20 @@
 		<style>
 			@import url("css/style.css");
 		</style>
-		<script src="js/jquery.min.js"></script>
-		<script src="js/jquery-animateoverflow.min.js"></script>
-		<script src="js/error.js"></script>
-		<script src="js/prefs.js"></script>
+		<script src="js/jquery.min.js"></script> <!-- not mine -->
+		<script src="js/jquery-animateoverflow.min.js"></script> <!-- also not mine -->
+
 		<script src="js/mplayer.class.js"></script>
-		<script src="js/cartfiles.class.js"></script>
-		<script src="js/main.js"></script>
+		<script src="js/cartfiles.class.js"></script> 
+
+		<!-- three kind of self-explaining static methods, 
+		     which are interdependent. -->
+		<script src="js/error.js"></script> 
+		<script src="js/prefs.js"></script>
+		<script src="js/spotmonger.js"></script>
+
+		<!-- define initial interactions between objects -->
+		<script src="js/ui.js"></script>
 	</head>
 	<body>
 
@@ -57,9 +64,6 @@
 				<div id="conf" class="btn icon">&#xf0ad;</div>
 			</div>
 
-			<div id="debug">
-				<button id="flog">Flog</button>
-			</div>
 		</div>
 
 		<input type='file' id='file_load' />

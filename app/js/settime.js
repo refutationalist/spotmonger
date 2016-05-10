@@ -31,17 +31,56 @@ $(document).ready(function() {
 		}
 	});
 
+	$("#set").click(function() {
+		if (settime.id == 0) return;
+		window.opener.cart.carts[settime.id].start_at = settime.stamp;
+		window.close();
+
+
+	});
+
+	$("#close").click(function() {
+		if (settime.id == 0) return;
+		window.opener.cart.carts[settime.id].start_at = 0;
+		window.close();
+	});
+
 
 });
 
+function setup(ti, tn) {
+	settime.id = ti;
+	$("#cart_name").html(tn);
+
+	window.opener.error.note("start time: "+
+							 window.opener.cart.carts[ti].start_at);
+
+	if (window.opener.cart.carts[ti].start_at != undefined &&
+		window.opener.cart.carts[ti].start_at != 0) {
+		settime.stamp = window.opener.cart.carts[ti].start_at;
+	} else {
+		settime.stamp = settime.now_stamp();
+	}
+	settime.stamp_to_parts();
+	$("#hour").val(settime.st_hour);
+	$("#minute").val(settime.st_minute);
+	$("#second").val(settime.st_second);
+
+}
+
 var settime = {
-	stamp:  0,
+	id:        0,
+	stamp:     0,
 	st_hour:   0,
 	st_minute: 0,
 	st_second: 0,
 
 	hour: function(ele, direction) {
 		this.st_hour = this.increment(ele, direction, 23);
+		this.compute_stamp();
+	},
+	hour_set: function(ele, val) {
+		this.st_minute = this.directset(ele, val, 23);
 		this.compute_stamp();
 	},
 
@@ -61,6 +100,13 @@ var settime = {
 	second_set: function(ele, val) {
 		this.st_second = this.directset(ele, val, 59);
 		this.compute_stamp();
+	},
+
+	stamp_to_parts: function() {
+		var time       = new Date(this.stamp * 1000);
+		this.st_hour   = this.pad(time.getHours(), 2);
+		this.st_minute = this.pad(time.getMinutes(), 2);
+		this.st_second = this.pad(time.getSeconds(), 2);
 	},
 
 	increment: function(ele, direction, up_limit) {
@@ -100,21 +146,6 @@ var settime = {
 
 	now_stamp: function() { // same.
 		return Math.floor(Date.now() / 1000);
-	},
-
-	set_time: function(e_hour, e_minute, e_second, in_stamp) {
-
-		var time = new Date(in_stamp * 1000); // move to a double float
-
-		var hour   = pad(time.getHours(), 2);
-		var minute = pad(time.getMinutes(), 2);
-		var second = pad(time.getSeconds(), 2);
-
-
-		e_hour.val(hour);
-		e_minute.val(minute);
-		e_second.val(second);
-
 	},
 
 

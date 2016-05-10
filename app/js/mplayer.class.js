@@ -112,20 +112,12 @@ MPlayerControl.prototype.init = function(callback) {
 			if (!this.destruct) this.restart();
 		}.bind(this));
 
-		/*
-		this.process.on('uncaughtException', function(err) {
-			console.log('uncaught', err);
-		});
-		*/
 
 
 
 			
 
 		this.command_send = setInterval(this.send_status_cmds.bind(this), this.status_interval);
-		//this.mpwrite("pause");
-
-		//this.process.stdin.write("pause\n");
 		this.mpwrite("pause");
 		this.online = true;
 		if (typeof(callback) == "function") callback();
