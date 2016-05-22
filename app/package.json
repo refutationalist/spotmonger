@@ -6,7 +6,7 @@
 	"window": {
 		"title":      "SpotMonger",
 		"icon":       "icon.png",
-		"width":      750,
+		"width":      820,
 		"height":     240,
 		"resizable":  false,
 		"show":		  false

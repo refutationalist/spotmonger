@@ -1,0 +1,45 @@
+#main.soundboard {
+	height: 740px;
+}
+.soundboard #carts {
+	width: 800px !important;
+	background: none;
+	border: none;
+}
+.soundboard #carts > div {
+	width: 100%;
+	height: 100%;
+	top: 0; left: 0; bottom: 0; right: 0;
+	overflow-y: visible;
+	box-shadow: none;
+}
+.soundboard #carts button {
+	display: none;
+}
+
+.soundboard #player {
+	bottom: 0;
+	left: 120px;
+}
+
+.soundboard #carts div.cart {
+	width: 250px;
+	border: 1px solid #888888;
+	border-radius: 8px;
+	float: left;
+	margin-left: 6px;
+	margin-right: 6px;
+	margin-bottom: 20px;
+}
+
+.soundboard #carts div.cart .timeset {
+	display: none;
+}
+
+.soundboard #carts div.cart .time {
+	right: 5px;
+}
+
+.stopclock #display {
+	background: #d1858e;
+}

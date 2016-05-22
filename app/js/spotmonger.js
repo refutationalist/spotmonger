@@ -7,6 +7,7 @@ var sm = {
 	SILENCE_FILE: 'CARTAMOC.SILENCE',
 
 	loaded: false,
+	stopclock: 0,
 	silence_file: process.cwd()+'/silence.mp3',
 	/* The silence file is a placeholder file so I know I've reached the
 	   end of a cart.   CHEEEEAP HAAAAACK! */
@@ -68,21 +69,25 @@ var sm = {
 				delete cart.carts[id].start_at;
 			} else {
 
-				var diff = cart.carts[id].start_at - (Date.now() / 1000);
+				if (sm.stopclock == 0) {
+					var diff = cart.carts[id].start_at - (Date.now() / 1000);
 
 
-				if (diff <= 0) { // if we're past cue time, fire cue
+					if (diff <= 0) { // if we're past cue time, fire cue
 
-					if (prefs.cue_command != "") {
-						sm.do_cue_fire(id);
-					} else {
-						sm.load_cart_id(id, true);
+						if (prefs.cue_command != "") {
+							sm.do_cue_fire(id);
+						} else {
+							sm.load_cart_id(id, true);
+						}
+
+						delete cart.carts[id].start_at;
+
+					} else { // otherwise, update display
+						$('#'+id+' .state').html("Cued In: "+sm.int_to_time(diff));
 					}
-
-					delete cart.carts[id].start_at;
-
-				} else { // otherwise, update display
-					$('#'+id+' .state').html("Cued In: "+sm.int_to_time(diff));
+				} else {
+					$('#'+id+' .state').html("Clock Stopped");
 				}
 
 
@@ -327,6 +332,26 @@ var sm = {
 		
 
 
+	},
+
+
+	do_stopclock: function() {
+		sm.stopclock = Date.now() / 1000;
+	},
+
+
+	undo_stopclock: function() {
+		var diff = (Date.now() / 1000) - sm.stopclock;
+
+		for (id in cart.carts) {
+			if (cart.carts[id].start_at != 0 &&
+				cart.carts[id].start_at != undefined) {
+				cart.carts[id].start_at += diff;
+			}
+		}
+
+		sm.stopclock = 0;
+	
 	}
 
 

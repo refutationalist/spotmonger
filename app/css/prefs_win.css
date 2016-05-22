@@ -1,0 +1,42 @@
+
+
+div.prefs {
+	/*
+	height: 274px;
+	width: 606px;
+	*/
+}
+
+div.prefs > div {
+	font-family: sans-serif;
+	font-size: 13px;
+	width: 600px;
+	margin-bottom: 20px;
+	padding: 6px;
+}
+
+div.prefs > div > label {
+	display: inline-block;
+	font-weight: bold;
+	height: 28px;
+	line-height: 28px;
+	padding-right: 20px;
+	width: 140px;
+}
+
+div.prefs > div span.e {
+	display: block;
+	margin-left: 164px;
+}
+div.prefs > div input[type=text] {
+	width: 420px;
+}
+
+
+div.prefs > div.buttons button {
+	width: 200px;
+	height: 40px
+}
+div.prefs > div.buttons button:first-child {
+	margin-right: 190px;
+}

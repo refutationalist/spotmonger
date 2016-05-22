@@ -70,6 +70,17 @@ $(document).ready(function() {
 
 	});
 
+	$("#stopclock").click(function() {
+		$("#main").toggleClass("stopclock");
+		$("#stopclock").toggleClass("pressed");
+		if (sm.stopclock == false) {
+			sm.do_stopclock();
+		} else {
+			sm.undo_stopclock();
+		}
+	});
+
+
 
 
 	process.on('uncaughtException', error.report);

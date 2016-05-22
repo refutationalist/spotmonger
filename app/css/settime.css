@@ -1,0 +1,190 @@
+
+div.time_set p {
+	font-family: "RobotoLight";
+	text-align: center;
+	font-size: 14px;
+	width: 80%;
+	margin: 4px 10%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	
+}	
+
+div.time_set .widget {
+	width: 338px;
+	height: 200px;
+	left: 50%;
+	margin-left: -165px;
+	position: absolute;
+	top: 47px;
+}
+
+div.time_set div.hour,
+div.time_set div.minute,
+div.time_set div.second,
+div.time_set div.ampm {
+	width: 64px;
+	height: 200px;
+	text-align: center;
+	float: left;
+}
+div.time_set div.colon {
+	width: 30px;
+	height: 200px;
+	line-height: 200px;
+	text-align: center;
+	font-size: 40px;
+	font-family: RobotoCondensed;
+	float: left;
+}
+
+div.time_set div.hour {
+	margin-left: 44px;
+}
+
+
+div.time_set div.ampm {
+	padding-top:50px;
+	height: 150px;
+	width: 86px;
+}
+
+div.time_set #hour,
+div.time_set #minute,
+div.time_set #second {
+	width: 50px;
+	height: 50px;
+	font-family: RobotoCondensed;
+	text-align: center;
+	font-size: 40px;
+
+}
+
+div.time_set .up,
+div.time_set .down,
+div.time_set #am,
+div.time_set #pm {
+
+	width: 50px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	margin: 10px auto;
+	font-family: 'FontAwesome';
+	font-size: 18px;
+
+}
+
+div.time_set .up,
+div.time_set #am {
+	border-top-left-radius:     16px;
+	border-top-right-radius:    16px;
+	border-bottom-left-radius:  0;
+	border-bottom-right-radius: 0;
+}
+div.time_set .down,
+div.time_set #pm {
+	border-bottom-left-radius:     16px;
+	border-bottom-right-radius:    16px;
+	border-top-left-radius:  0;
+	border-top-right-radius: 0;
+}
+
+div.time_set #am,
+div.time_set #pm {
+	margin: 0;
+	font-family: RobotoCondensed;
+	font-size: 30px;
+	text-align: center;
+	width: 70px;
+}
+div.time_set #pm {
+	border-top: none;
+}
+
+div.time_set .quick_select {
+	border: 1px solid #aaaaaa;
+	width: 338px;
+	height: 200px;
+	left: 50%;
+	margin-left: -165px;
+	position: absolute;
+	top: 248px;
+	box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.50);
+	background: #cccccc;
+}
+div.time_set .quick_select h2 {
+	font-family: RobotoCondensed;
+	font-size: 18px;
+	font-weight: normal;
+	margin: 8px;
+}
+div.time_set .quick_select button {
+	width: 60px;
+	height: 45px;
+	margin: 3px 24px;
+}
+
+div.time_set .quick_select .type_select {
+	width: 100%;
+	height: 35px;
+	margin-top: 10px;
+}
+
+div.time_set .quick_select .type_select div {
+	width: 160px;
+	margin: 0;
+	border-radius: 0;
+	float: left;
+	height: 35px;
+	line-height: 35px;
+	text-align: center;
+}
+
+div.time_set .quick_select #qs_minute {
+	border-top-left-radius: 20px;
+	border-bottom-left-radius: 20px;
+	border-right: none;
+	margin-left: 8px;
+}
+
+div.time_set .quick_select #qs_second {
+	border-top-right-radius: 20px;
+	border-bottom-right-radius: 20px;
+	border-right: none;
+}
+
+
+div.time_set .buttons {
+	display: block;
+	height: 40px;
+	margin: 3px auto;
+	width: 338px;
+	position: absolute;
+	margin-left: 50%;
+	left: -168px;
+	bottom: 5px;
+}
+
+div.time_set .buttons button {
+	width: 169px;
+	margin: 0;
+	border-radius: 0;
+	float: left;
+	height: 45px;
+	line-height: 45px;
+	text-align: center;
+}
+
+div.time_set .buttons #set {
+	border-top-left-radius: 20px;
+	border-bottom-left-radius: 20px;
+	border-right: none;
+}
+
+div.time_set .buttons #close {
+	border-top-right-radius: 20px;
+	border-bottom-right-radius: 20px;
+	border-right: none;
+}

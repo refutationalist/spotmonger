@@ -3,7 +3,9 @@
 	<head>
 		<title>SpotMonger</title>
 		<style>
-			@import url("css/style.css");
+			@import url("css/common.css");
+			@import url("css/spotmonger.css");
+			@import url("css/soundboard.css");
 		</style>
 		<script src="js/jquery.min.js"></script> <!-- not mine -->
 		<script src="js/jquery-animateoverflow.min.js"></script> <!-- also not mine -->
@@ -37,33 +39,39 @@
 				<button id="startload">Load Cart</button>
 			</div>
 
-			<div id="display">
-				<p class="tracknum">
-					<span class='t'></span>
-					/
-					<span class='o'></span>
-				</p>
-				<p class="cartname"></p>
-				<p class="trackname"></p>
+			<div id="player">
+				<div id="display">
+					<p class="tracknum">
+						<span class='t'></span>
+						/
+						<span class='o'></span>
+					</p>
+					<p class="cartname"></p>
+					<p class="trackname"></p>
 
-				<div class="bar">
-					<div class="fill"></div>
+					<div class="bar">
+						<div class="fill"></div>
+					</div>
+					<div class="time"></div>
+					
 				</div>
-				<div class="time"></div>
-				
+
+				<div id="info"></div>
+
+				<div id="control">
+					<div id="prev"  class="btn icon">&#xf049;</div>
+					<!-- pause: &#xf04c; -->
+					<div id="play"  class="btn icon">&#xf04b;</div>
+					<div id="next"  class="btn icon">&#xf050;</div>
+					<div id="eject" class="btn icon">&#xf052;</div>
+				</div>
+
+				<div id="modes">
+					<div id="sndboard" class="btn icon">&#xf0e4;</div>
+					<div id="stopclock" class="btn icon">&#xf28c;</div>
+					<div id="conf" class="btn icon">&#xf0ad;</div>
+				</div>
 			</div>
-
-			<div id="info"></div>
-
-			<div id="control">
-				<div id="prev"  class="btn icon">&#xf049;</div>
-				<!-- pause: &#xf04c; -->
-				<div id="play"  class="btn icon">&#xf04b;</div>
-				<div id="next"  class="btn icon">&#xf050;</div>
-				<div id="eject" class="btn icon">&#xf052;</div>
-				<div id="conf" class="btn icon">&#xf0ad;</div>
-			</div>
-
 		</div>
 
 		<input type='file' id='file_load' />

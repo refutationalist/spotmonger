@@ -3,7 +3,7 @@ SpotMonger
 
 ![SpotMonger as of May 2016](https://raw.githubusercontent.com/refutationalist/spotmonger/master/example.png)
 
-SpotMonger is a basic "cart player," a broadcast studio tool for playing pre-recorded audio segments, jingles, leads, and other incidental audio.  SpotMonger extends that by allowing timed cueing, useful for scheduling commercial breaks.
+SpotMonger is a basic "cart player," a broadcast studio tool for playing pre-recorded audio segments, jingles, leads, and other incidental audio.  SpotMonger extends that by allowing timed cueing, useful for scheduling commercial breaks.   It is optimized for touchscreens.
 
 It is written in [nw.js](http://nwjs.io) and thus is written like something between a web page and a node app.  It calls tar, ffprobe (part of ffmpeg), and most importantly mplayer, which is used as the actual audio player.  SpotMonger *requires* JACK.
 
