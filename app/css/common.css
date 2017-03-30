@@ -80,3 +80,18 @@ h1 {
 	display: none;
 }
 
+
+/* for textoverflow */
+
+.pingpong {
+	overflow: hidden;
+}
+
+.pingpong .pgpg_inner {
+	white-space: nowrap;
+	top: 0; left: 0; bottom: 0; right: 0;
+	transition: 10s ease-in-out;
+	transform: translateX(0px);
+}
+
+

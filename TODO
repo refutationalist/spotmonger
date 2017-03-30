@@ -11,3 +11,4 @@
   * consider using one of the mplayer node modules that have been written since spotmonger
   * Add "multicart" with card files?
     - the idea being that we can include a group of breaks with relative cueing time.
+  * post-jQuery optimization (querySelector to getElementById where approp)

@@ -118,8 +118,7 @@ var sm = {
 
 
 	load_cart: function(evt) {
-		//var id    = $(this).attr('id');
-		var id = evt.target.id;
+		var id = evt.currentTarget.id;
 		sm.load_cart_id(id, false);
 	},
 
@@ -207,16 +206,12 @@ var sm = {
 	},
 
 	update_cart_display: function() {
+		var newname = (sm.loaded == false) ? "Stopped" : cart.getCartInfo(sm.loaded).name;
+		var element = document.querySelector(".cartname");
 
-		/* Cart Name Management */
-		if (sm.loaded == false) {
-			document.querySelector(".cartname").innerHTML = "Stopped";
-		} else {
-			var element = document.querySelector(".cartname");
-
-			if (element.innerText != cart.getCartInfo(sm.loaded).name) 
-				element.innerHTML = cart.getCartInfo(sm.loaded).name;
-
+		if (element.innerText.trim() != newname.trim()) {
+			console.log("ucd fires");
+			element.innerHTML = newname;
 		}
 	},
 
@@ -251,7 +246,7 @@ var sm = {
 			trackname = mpl.state.meta_title;
 		}
 
-		if (trackname != trackname_ele.innerText)
+		if (trackname.trim() != trackname_ele.innerText.trim())
 			trackname_ele.innerHTML = trackname;
 
 
@@ -370,16 +365,14 @@ var sm = {
 
 	update_cartstate: function(id, txt) {
 		console.log("in update_cartstate", id, txt);
-		var qs;
 
-		if (id != false) {
-			qs = '#'+id+' .state';
+		if (id == false) {
+			document.querySelectorAll("#carts .cart .state").forEach(function(ele) {
+				ele.innerHTML = txt;
+			});
 		} else {
-			qs = "#carts .cart .state";
+			document.querySelector('#'+id+' .state').innerHTML = txt;
 		}
-
-		document.querySelector(qs).innerHTML = txt;
-
 
 	}
 

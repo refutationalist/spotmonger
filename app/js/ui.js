@@ -1,12 +1,7 @@
 
+
+
 var mpl, cart; // non-static objects that require instantiation
-
-const overflow_opts = {
-						animation: 'pingpong',
-						step_speed: 20,
-						delay:      5000
-				    }; // overflow display options
-
 
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -75,15 +70,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 	document.querySelector("#stopclock").addEventListener("click", function() {
-		var main_e = document.getElementById("main");
+		//var main_e = document.getElementById("main");
+		//
+		document.getElementById('main').classList.toggle('stopclock');
 		var stb_e  = document.getElementById("stopclock");
 
 		if (sm.stopclock == false) {
-			main_e.classList.add("stopclock");
+			//main_e.classList.add("stopclock");
 			stb_e.classList.add("pressed");
 			sm.do_stopclock();
 		} else {
-			main_e.classList.remove("stopclock");
+			//main_e.classList.remove("stopclock");
 			stb_e.classList.remove("pressed");
 			sm.undo_stopclock();
 		}
