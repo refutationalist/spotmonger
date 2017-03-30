@@ -274,11 +274,11 @@ var sm = {
 		var info_ele = document.querySelector("#info");
 
 		info_ele.innerHTML = str;
-		info_ele.style.display = 'block';
+		info_ele.style.opacity = 1;
 
 		setTimeout(function() {
-			info_ele.style.display = 'none';
-			info_ele.innerHTML = '';
+			info_ele.style.opacity = 0;
+			//info_ele.innerHTML = '';
 		}, 3000);
 
 	},

@@ -287,9 +287,15 @@
 	text-align: center;
 	top: 94px;
 	width: 470px;
-	display: none;
+	opacity: 0;
+	transition: opacity 1s;
 }
 
 
-/* Error Logging Window */
+/* display colors */
+
+.stopclock #display {
+	background: #d1858e;
+}
+
 
