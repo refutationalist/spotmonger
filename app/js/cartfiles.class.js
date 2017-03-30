@@ -19,7 +19,7 @@ var CartFiles = function() {
 }
 
 CartFiles.prototype.uniqid = function() {
-    return Math.random().toString(36).substr(2,9);
+    return 'cart_'+Math.random().toString(36).substr(2,9);
 }
 
 

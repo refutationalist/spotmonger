@@ -1,45 +1,70 @@
 const UP   = false;
 const DOWN = true;
 
-$(document).ready(function() {
-	$(".hour .up").click(function() {   settime.hour($("#hour"), UP); });
-	$(".hour .down").click(function() { settime.hour($("#hour"), DOWN); });
+document.addEventListener("DOMContentLoaded", function() {
+
+	/* A WHOLE bunch of button bindings */
+
+	document.querySelector(".hour .up").addEventListener('click', function() {
+		settime.hour(document.getElementById("hour"), UP);
+	});
+
+	document.querySelector(".hour .down").addEventListener('click', function() {
+		settime.hour(document.getElementById("hour"), DOWN);
+	});
+
+	document.querySelector(".minute .up").addEventListener('click', function() {
+		settime.minute(document.getElementById("minute"), UP);
+	});
+
+	document.querySelector(".minute .down").addEventListener('click', function() {
+		settime.minute(document.getElementById("minute"), DOWN);
+	});
+
+	document.querySelector(".second .up").addEventListener('click', function() {
+		settime.second(document.getElementById("second"), UP);
+	});
+
+	document.querySelector(".second .down").addEventListener('click', function() {
+		settime.second(document.getElementById("second"), DOWN);
+	});
+
+
+	/* bindings and initial state for the quick select */
+	document.getElementById("qs_minute").classList.add('pressed');
+
+	document.querySelectorAll(".quick_select .type_select div").forEach(function(ele) {
+		ele.addEventListener('click', function() {
+			console.log("toggle quickselect");
+			document.getElementById('qs_minute').classList.toggle('pressed');
+			document.getElementById('qs_second').classList.toggle('pressed');
+		});
+	});
+
+
+	document.querySelectorAll(".quick_select button").forEach(function(ele) {
 	
-	$(".minute .up").click(function() {   settime.minute($("#minute"), UP); });
-	$(".minute .down").click(function() { settime.minute($("#minute"), DOWN); });
+		ele.addEventListener('click', function(evt) {
+			console.log("quickselect button pressed");
+			var time      = evt.target.id.substr(1,2);
 
 
-	$(".second .up").click(function() {   settime.second($("#second"), UP); });
-	$(".second .down").click(function() { settime.second($("#second"), DOWN); });
-
-
-	$("#qs_minute").addClass('pressed');
-	$(".quick_select .type_select div").click(function() {
-		$("#qs_minute").toggleClass("pressed");
-		$("#qs_second").toggleClass("pressed");
+			if (document.getElementById('qs_minute').classList.contains('pressed')) {
+				settime.minute_set(document.getElementById("minute"), time);
+			} else {
+				settime.second_set(document.getElementById("second"), time);
+			}
+		});
 	});
 
-
-	$(".quick_select button").click(function() {
-		var time      = $(this).attr('id').substr(1,2);
-		var change = ($("#qs_minute").hasClass('pressed')) ? "#minute" : "#second";
-
-		if ($("#qs_minute").hasClass('pressed')) {
-			settime.minute_set($("#minute"), time);
-		} else {
-			settime.second_set($("#second"), time);
-		}
-	});
-
-	$("#set").click(function() {
+	
+	document.getElementById("set").addEventListener('click', function() {
 		if (settime.id == 0) return;
 		window.opener.cart.carts[settime.id].start_at = settime.stamp;
 		window.close();
-
-
 	});
 
-	$("#close").click(function() {
+	document.getElementById("close").addEventListener('click', function() {
 		if (settime.id == 0) return;
 		window.opener.cart.carts[settime.id].start_at = 0;
 		window.close();
@@ -50,7 +75,7 @@ $(document).ready(function() {
 
 function setup(ti, tn) {
 	settime.id = ti;
-	$("#cart_name").html(tn);
+	document.getElementById("cart_name").innerHTML = tn;
 
 	window.opener.error.note("start time: "+
 							 window.opener.cart.carts[ti].start_at);
@@ -62,9 +87,10 @@ function setup(ti, tn) {
 		settime.stamp = settime.now_stamp();
 	}
 	settime.stamp_to_parts();
-	$("#hour").val(settime.st_hour);
-	$("#minute").val(settime.st_minute);
-	$("#second").val(settime.st_second);
+
+	document.getElementById("hour").value = settime.st_hour;
+	document.getElementById("minute").value = settime.st_minute;
+	document.getElementById("second").value = settime.st_second;
 
 }
 
@@ -110,14 +136,14 @@ var settime = {
 	},
 
 	increment: function(ele, direction, up_limit) {
-		console.log(ele.val());
-		var val = parseInt(ele.val());
+		console.log(ele.value);
+		var val = parseInt(ele.value);
 		val = (direction == DOWN) ? val - 1 : val + 1;
 
 		if (val > up_limit) val = 0;
 		if (val < 0) val = up_limit;
 
-		ele.val(this.pad(val, 2));
+		ele.value = this.pad(val, 2);
 
 		//process.stdout.write(val + "\n");
 		console.log(val);
@@ -127,7 +153,7 @@ var settime = {
 
 	directset: function(ele, value, up_limit) {
 		var val = parseInt(value) % up_limit;
-		ele.val(this.pad(val, 2));
+		ele.value = this.pad(val, 2);
 		return val;
 
 	},
@@ -152,8 +178,8 @@ var settime = {
 	compute_stamp: function() {
 		var time   = new Date();
 
-		var total_seconds = (parseInt(this.st_hour) * 3600) + 
-							(parseInt(this.st_minute) * 60) + 
+		var total_seconds = (parseInt(this.st_hour) * 3600) +
+							(parseInt(this.st_minute) * 60) +
 							 parseInt(this.st_second);
 
 		var picked_stamp = total_seconds + this.today_stamp();
@@ -171,6 +197,6 @@ var settime = {
 		z = z || '0';
 		n = n + '';
 		return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-	}		
+	}
 
 };

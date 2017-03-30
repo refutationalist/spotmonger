@@ -2,13 +2,13 @@
 # AS YET UNRELEASED
 pkgname=spotmonger
 pkgver=1.1.0
-pkgrel=1
+pkgrel=2
 pkgdesc="interface to music on console to work as a cartplayer"
 arch=('x86_64' 'i686')
 url="http://sam.vis.nu/"
 license=('GPL')
 groups=('studmufn')
-depends=('nwjs-bin' 'php' 'ffmpeg-jack' 'tar' 'mplayer')
+depends=('nwjs-bin' 'php' 'ffmpeg' 'tar' 'mplayer')
 changelog=
 replaces=('cartamoc')
 conflicts=('cartamoc')

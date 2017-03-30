@@ -320,13 +320,9 @@ var sm = {
 
 
 	set_cuetime: function(evt) {
-		evt.stopPropagation();
 
 		var id = evt.target.parentNode.id;
 		var name = document.querySelector('#'+id+' .name').innerHTML;
-
-		console.log("set_cuetime", id, name);
-		return;
 
 
 		nw.Window.open('settime.html', 
@@ -345,7 +341,8 @@ var sm = {
 
 
 					  });
-		e.stopPropagation();
+		evt.stopPropagation();
+
 		
 
 
@@ -372,6 +369,7 @@ var sm = {
 	},
 
 	update_cartstate: function(id, txt) {
+		console.log("in update_cartstate", id, txt);
 		var qs;
 
 		if (id != false) {
