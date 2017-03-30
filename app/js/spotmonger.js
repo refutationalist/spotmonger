@@ -1,5 +1,4 @@
 
-
 var sm = {
 	
 	PAUSE:        "&#xf04c;",
@@ -65,7 +64,7 @@ var sm = {
 			if (cart.carts[id].start_at == undefined) continue;
 
 			if (cart.carts[id].start_at == 0) { // if cue is at 0, clear display
-				$('#'+id+' .state').html('');
+				sm.update_cartstate(id, '');
 				delete cart.carts[id].start_at;
 			} else {
 
@@ -84,10 +83,10 @@ var sm = {
 						delete cart.carts[id].start_at;
 
 					} else { // otherwise, update display
-						$('#'+id+' .state').html("Cued In: "+sm.int_to_time(diff));
+						sm.update_cartstate(id, 'Cued In: '+sm.int_to_time(diff));
 					}
 				} else {
-					$('#'+id+' .state').html("Clock Stopped");
+					sm.update_cartstate(id, 'Clock Stopped');
 				}
 
 
@@ -119,7 +118,8 @@ var sm = {
 
 
 	load_cart: function(evt) {
-		var id    = $(this).attr('id');
+		//var id    = $(this).attr('id');
+		var id = evt.target.id;
 		sm.load_cart_id(id, false);
 	},
 
@@ -128,14 +128,16 @@ var sm = {
 		var files = cart.getCartFiles(id);
 		files.push(sm.silence_file); // add slience file to detect end of cart
 
-		$("#carts .state").html('');
+		sm.update_cartstate(false, '');
+		sm.update_cartstate(id, "Loading");
 
-		$('#'+id+' .state').html("Loading");
 		mpl.stop(function() {
 			mpl.loadlist(files, function() {
-				$('#'+id+' .state').html("Loaded");
-				$('#carts .cart').removeClass("loaded");
-				$('#'+id).addClass("loaded");
+				sm.update_cartstate(id, "Loaded");
+
+				document.querySelectorAll("#carts .cart").forEach(function (e) { e.classList.remove("loaded"); });
+				document.querySelector('#'+id).classList.add("loaded");
+
 				sm.loaded = id;
 				if (autoplay == true) {
 					mpl.playpause();
@@ -150,32 +152,39 @@ var sm = {
 	add_cart: function(evt) {
 
 
-		var file_ui = $(this).val();
-		$(this).val('');
+		//var file_ui = $(this).val();
+		//$(this).val('');
+		var file_ui = evt.target.value;
+		evt.target.value = '';
 
 
 		cart.load(file_ui, function(id) {
 
 			var info = cart.getCartInfo(id);
 
-			var canvas = "<div id='"+id+"' class='cart'>"+
-						 "<div class='name'>"+info.name+"</div>"+
-						 "<div class='state'></div>"+
-						 "<div class='time'></div>"+
-						 "<div class='timeset icon'>&#xf017;</div>"+
-						 "</div>";
+			var new_div = document.createElement('div');
+			new_div.className = 'cart';
+			new_div.id = id;
 
-			$("#carts > div").append(canvas);
+			new_div.insertAdjacentHTML('afterbegin', sprintf("<div class='name'>%s</div>"+
+															 "<div class='state'></div>"+
+															 "<div class='time'></div>"+
+															 "<div class='timeset icon'>&#xf017;</div>", info.name));
+
+
 
 			cart.runtime(id, function(id) {
 				var time = sm.int_to_time(cart.getCartInfo(id).runtime);
-				$("#"+id+" div.time").html(time);
+				new_div.querySelector('div.time').innerHTML = time;
 
 			});
 
-			$("#"+id).on('click', sm.load_cart);
-			$("#"+id+" .timeset").on('click', sm.set_cuetime);
 
+
+			new_div.addEventListener('click', sm.load_cart);
+			new_div.querySelector('div.timeset').addEventListener('click', sm.set_cuetime);
+
+			document.querySelector("#carts > div").appendChild(new_div);
 		});
 
 	},
@@ -187,7 +196,9 @@ var sm = {
 		} else {
 
 			mpl.loadfile(sm.silence_file, false, true, function() {
-				$("#"+sm.loaded).remove();
+				var element = document.querySelector('#'+sm.loaded);
+				element.parentNode.removeChild(element);
+
 				cart.unload(sm.loaded);
 				sm.loaded = false;
 			});
@@ -199,31 +210,36 @@ var sm = {
 
 		/* Cart Name Management */
 		if (sm.loaded == false) {
-			$(".cartname").html("Stopped");
+			document.querySelector(".cartname").innerHTML = "Stopped";
 		} else {
-			if ($(".cartname").text() != cart.getCartInfo(sm.loaded).name) {
-				$(".cartname").remove();
-				$("#display").append("<p class='cartname'>"+
-									 cart.getCartInfo(sm.loaded).name+
-									 "</p>");
-				$(".cartname").animateOverflow(overflow_opts);
-			}
+			var element = document.querySelector(".cartname");
+
+			if (element.innerText != cart.getCartInfo(sm.loaded).name) 
+				element.innerHTML = cart.getCartInfo(sm.loaded).name;
+
 		}
 	},
 
 	clear_track_display: function() {
 
-		$(".trackname").html("");
-		$(".tracknum").css("display", "none");
-		$("#display .time").html("");
-		$("#display .bar .fill").css("width", "0%");
-		$("#play").html(sm.PLAY);
+		document.querySelector(".trackname").innerHTML = "";
+		document.querySelector(".tracknum").style.display = "none";
+		document.querySelector("#display .time").innerHTML = "";
+		document.querySelector("#display .bar .fill").style.width = "0%";
+		document.querySelector("#play").innerHTML = sm.PLAY;
 
 	},
 
 	update_track_display: function() {
 
-		$("#play").html((mpl.state.pause == "no") ? sm.PAUSE : sm.PLAY);
+		var trackname_ele  = document.querySelector("p.trackname");
+		var tracknum_ele   = document.querySelector(".tracknum");
+		var tracknum_t_ele = document.querySelector(".tracknum .t");
+		var tracknum_o_ele = document.querySelector(".tracknum .o");
+		var time_ele       = document.querySelector("#display .time");
+		var fill_ele       = document.querySelector("#display .bar .fill");
+
+		document.querySelector("#play").innerHTML = (mpl.state.pause == "no") ? sm.PAUSE : sm.PLAY;
 
 		// determine title and show
 
@@ -235,44 +251,40 @@ var sm = {
 			trackname = mpl.state.meta_title;
 		}
 
-		if (trackname != $("p.trackname").text()) {
-			$("p.trackname").remove();
-			$("#display").append("<p class='trackname'>"+
-								 trackname+
-								 "</p>");
-			$("p.trackname").animateOverflow(overflow_opts);
-		}
+		if (trackname != trackname_ele.innerText)
+			trackname_ele.innerHTML = trackname;
+
 
 
 		// show track numbering
-		$(".tracknum .t").html(cart.carts[sm.loaded].files.indexOf(
-				sm.path.basename(mpl.state.filename)) + 1
-		);
-		$(".tracknum .o").html(cart.getCartFiles(sm.loaded).length);
-		$(".tracknum").css("display", "block");
 
+		tracknum_t_ele.innerHTML = cart.carts[sm.loaded].files.indexOf( sm.path.basename(mpl.state.filename) ) + 1;
+		tracknum_o_ele.innerHTML = cart.getCartFiles(sm.loaded).length;
+		tracknum_ele.style.display = "block";
 
 		// time remaining // FIXME min/secify
-		$("#display .time").html(sm.int_to_time(parseInt(mpl.state.length) - 
-												  parseInt(mpl.state.time_position)));
+		time_ele.innerHTML = sm.int_to_time(parseInt(mpl.state.length) - 
+											parseInt(mpl.state.time_position));
 
 
 		// fill bar
 		var myperc = (mpl.state.time_position / mpl.state.length) * 100;
-		$("#display .bar .fill").css("width", myperc+"%");
+		fill_ele.style.width = myperc+"%";
 
 	},
 
 
 	show_info: function(str) {
 
-		$("#info").html(str);
+		var info_ele = document.querySelector("#info");
 
-		$("#info").fadeIn(500, function() {
-			setTimeout(function() {
-							$("#info").fadeOut(500);
-			}, 3000);
-		});
+		info_ele.innerHTML = str;
+		info_ele.style.display = 'block';
+
+		setTimeout(function() {
+			info_ele.style.display = 'none';
+			info_ele.innerHTML = '';
+		}, 3000);
 
 	},
 
@@ -307,10 +319,15 @@ var sm = {
 	},
 
 
-	set_cuetime: function(e) {
+	set_cuetime: function(evt) {
+		evt.stopPropagation();
 
-		var id = $(this).parent().attr('id');
-		var name = $('#'+id+' .name').html();
+		var id = evt.target.parentNode.id;
+		var name = document.querySelector('#'+id+' .name').innerHTML;
+
+		console.log("set_cuetime", id, name);
+		return;
+
 
 		nw.Window.open('settime.html', 
 					  {
@@ -352,7 +369,24 @@ var sm = {
 
 		sm.stopclock = 0;
 	
+	},
+
+	update_cartstate: function(id, txt) {
+		var qs;
+
+		if (id != false) {
+			qs = '#'+id+' .state';
+		} else {
+			qs = "#carts .cart .state";
+		}
+
+		document.querySelector(qs).innerHTML = txt;
+
+
 	}
+
+
+
 
 
 

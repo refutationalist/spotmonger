@@ -1,42 +1,44 @@
 
 
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function() {
+	
 
-	$("#jack_ports").val(window.opener.prefs.jack_ports);
-	$("#cue_command").val(window.opener.prefs.cue_command);
-	$("#state_file").val(window.opener.prefs.state_file);
+
+	document.querySelector("#jack_ports").value =  window.opener.prefs.jack_ports;
+	document.querySelector("#cue_command").value = window.opener.prefs.cue_command;
+	document.querySelector("#state_file").value =  window.opener.prefs.state_file;
 
 	if (window.opener.prefs.jack_noconnect == true) {
-		$("#jack_noconnect").prop("checked", true);
-		$("#jack_ports").prop("disabled", true);
+		document.getElementById('jack_noconnect').checked = true;
+		document.getElementById('jack_ports').disabled = true;
 	}
 
-	$("#jack_noconnect").change(function() {
+	document.getElementById('jack_noconnect').addEventListener('change', function(evt) {
 
 		var state;
 
-		if ($("#jack_noconnect").prop('checked') == true) {
+		if (evt.target.checked == true) {
 			state = true;
 		} else {
 			state = false;
 		}
 
-		$("#jack_ports").prop("disabled", state);
+		document.getElementById('jack_ports').disabled = state;
 
 	});
 
 
-	$("#show_logs").click(function() {
+	document.getElementById('show_logs').addEventListener('click', function() {
 		window.opener.error.pop_window();
 	});
 
-	$("#save_prefs").click(function () {
+	document.getElementById('save_prefs').addEventListener('click', function() {
 
 
-		window.opener.prefs.jack_ports     = $("#jack_ports").val();
-		window.opener.prefs.cue_command    = $("#cue_command").val();
-		window.opener.prefs.state_file     = $("#state_file").val();
-		window.opener.prefs.jack_noconnect = $("#jack_noconnect").prop("checked");
+		window.opener.prefs.jack_ports     = document.getElementById("jack_ports").value;
+		window.opener.prefs.cue_command    = document.getElementById("cue_command").value;
+		window.opener.prefs.state_file     = document.getElementById("state_file").value;
+		window.opener.prefs.jack_noconnect = document.getElementById("jack_noconnect").checked;
 
 		window.opener.sm.show_info("Saved.  Restart for changes to take effect.");
 

@@ -8,8 +8,7 @@ const overflow_opts = {
 				    }; // overflow display options
 
 
-
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function() {
 
 	// app initialization
 	prefs.load();
@@ -21,7 +20,7 @@ $(document).ready(function() {
 	// init carthandler subsystem
 	cart = new CartFiles();
 
-	$("#conf").click(function() { prefs.pop(); });
+	document.querySelector("#conf").addEventListener("click", function() { prefs.pop(); });
 
 
 	sm.init(); // initialize UI (static)
@@ -33,20 +32,22 @@ $(document).ready(function() {
 		setInterval(sm.loop, 500);
 		sm.loop();
 		nw.Window.get().show();
-		
 	}); // start up MPlayer Interactions, which call the UI loop
 
 	
 	// UI bindings
-	$("#startload").click(function() {
-		$("#file_load").trigger("click");
+	//
+	
+	document.querySelector("#startload").addEventListener("click", function() {
+		document.querySelector("#file_load").click();
 	});
-	$("#file_load").change(sm.add_cart);
-	$("#eject").click(sm.eject);
-	$("#next").click(function() { mpl.next();      });
+
+	document.querySelector("#file_load").addEventListener("change", sm.add_cart);
+	document.querySelector("#eject").addEventListener("click", sm.eject);
+	document.querySelector("#next").addEventListener("click", function() { mpl.next(); });
 
 
-	$("#prev").click(function() { 
+	document.querySelector("#prev").addEventListener("click", function() {
 		if (sm.loaded != false) {
 		
 			var pos = cart.getCartInfo(sm.loaded).files.indexOf(mpl.state.filename);
@@ -59,7 +60,7 @@ $(document).ready(function() {
 	});
 
 
-	$("#play").click(function() { 
+	document.querySelector("#play").addEventListener("click", function() {
 		if (sm.loaded != false &&
 			mpl.state.meta_title == sm.SILENCE_FILE) {
 
@@ -70,12 +71,20 @@ $(document).ready(function() {
 
 	});
 
-	$("#stopclock").click(function() {
-		$("#main").toggleClass("stopclock");
-		$("#stopclock").toggleClass("pressed");
+
+
+
+	document.querySelector("#stopclock").addEventListener("click", function() {
+		var main_e = document.getElementById("main");
+		var stb_e  = document.getElementById("stopclock");
+
 		if (sm.stopclock == false) {
+			main_e.classList.add("stopclock");
+			stb_e.classList.add("pressed");
 			sm.do_stopclock();
 		} else {
+			main_e.classList.remove("stopclock");
+			stb_e.classList.remove("pressed");
 			sm.undo_stopclock();
 		}
 	});
@@ -93,6 +102,8 @@ $(document).ready(function() {
 	});
 
 	// finally, display the window
+	//nw.Window.setResizeable(false);
+	require("nw.gui").Window.get().setResizable(false);
 	nw.Window.get().show();
 	
 

@@ -1,5 +1,6 @@
+  * figure out the zero sched bug
   * "soundboard mode" for playing clips faster during shows
-  * Pause the cue clock
+  PENDING PUSH * Pause the cue clock
   * external control (http server, I assume)
   * verify licensing of included code and fonts (have a quick look before)
   * pick a safer/saner way to handle

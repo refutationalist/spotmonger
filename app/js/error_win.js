@@ -1,23 +1,29 @@
 
 
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function() {
 
 	var curlen = 0;
 
-	$("#close").click(function() {
+	document.querySelector("#close").addEventListener("click", function() {
 		window.close();
 	});
 	
 	if (window.opener.error.suppress == true) {
-		$("#suppress").addClass("pressed");
+		document.querySelector("#suppress").classList.add("pressed");
 	}
 
-	$("#suppress").click(function() {
 
+	document.querySelector("#suppress").addEventListener("click", function(evt) {
 
-		$(this).toggleClass("pressed");
-		window.opener.error.suppress = 
-			(window.opener.error.suppress == true) ? false : true;
+		var new_val = (window.opener.error.suppress == true) ? false : true;
+
+		window.opener.error.suppress = new_val;
+
+		if (new_val == true) {
+			evt.target.classList.add("pressed");
+		} else {
+			evt.target.classList.remove("pressed");
+		}
 
 	});
 
@@ -25,8 +31,12 @@ $(document).ready(function() {
 		if (curlen != 
 			window.opener.error.length) {
 			curlen = window.opener.error.length;
-			$("#err").html(window.opener.error.collected.join("<br />\n"));
-			$("#err").scrollTop($("#err")[0].scrollHeight);
+
+			var ele = document.querySelector("#err");
+
+			ele.innerHTML = window.opener.error.collected.join("<br />\n");
+			ele.scrollTop = ele.scrollHeight;
+
 		}
 	}, 250);
 });

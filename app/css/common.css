@@ -1,11 +1,11 @@
 @font-face {
 	font-family: RobotoLight;
-	src: url("../fonts/Roboto-Light.ttf");
+	src: url("../fonts/Roboto-Light.woff2");
 }
 
 @font-face {
 	font-family: 'FontAwesome';
-	src: url('../fonts/fontawesome-webfont.ttf');
+	src: url('../fonts/fontawesome-webfont.woff2');
 }
 
 
@@ -17,7 +17,7 @@
 
 @font-face {
 	font-family: RobotoCondensed;
-	src: url("../fonts/RobotoCondensed-Regular.ttf");
+	src: url("../fonts/RobotoCondensed-Regular.woff2");
 }
 
 
