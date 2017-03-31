@@ -1,71 +1,200 @@
 
-
-
-var mpl, cart; // non-static objects that require instantiation
-
 document.addEventListener("DOMContentLoaded", function() {
 
+
+	try {
+		var cp = require('child_process');
+
+		var tar = cp.execSync('which tar', { encoding: 'utf8' }).trim();
+		var mplayer = cp.execSync('which mplayer', { encoding: 'utf8' }).trim();
+		var ffprobe = cp.execSync('which ffprobe', { encoding: 'utf8' }).trim();
+
+		var data_path = nw.App.dataPath;
+
+	} catch (e) {
+		process.stderr.write(sprintf("Can't find needed binary: %s", e.message));
+		nw.App.quit();
+	}
+
+	process.stderr.write(sprintf("Commands:\n\ttar: %s\n\tmplayer: %s\n\tffprobe: %s\n\tdp: %s\n\n", 
+								 tar, mplayer, ffprobe, data_path));
+
+
+	var emitter = new (require('events')).EventEmitter();
+
+		
 	// app initialization
 	prefs.load();
 
-	// start up mplayer
-	var ports = (prefs.jack_noconnect) ? "noconnect" : prefs.jack_ports;
-	mpl = new MPlayerControl("/usr/bin/mplayer", ports);
-
-	// init carthandler subsystem
-	cart = new CartFiles();
-
-	document.querySelector("#conf").addEventListener("click", function() { prefs.pop(); });
-
-
-	sm.init(); // initialize UI (static)
+	console.log(prefs.data);
 
 
 
-	mpl.init(function() { 
-		error.note("In main init");
-		setInterval(sm.loop, 500);
-		sm.loop();
-		nw.Window.get().show();
-	}); // start up MPlayer Interactions, which call the UI loop
+	sm = Spotmonger_Control({
+								tar: tar,
+								mplayer: mplayer,
+								ffprobe: ffprobe,
+								error: error,
+								emitter: emitter,
+								prefs: prefs.data
+	});
+
+
+	if (sm == false) {
+		process.stderr.write("can't init Spotmonger_Control\n");
+		nw.App.quit();
+	}
+
+	require("nw.gui").Window.get().setResizable(false);
 
 	
-	// UI bindings
-	//
+	process.on('uncaughtException', error.report);
+	nw.Window.get().on('closed', function() {
+		sm.destruct();
+		error.note("exit complete.");
+	});
+
+	nw.Window.get().show();
+	
 	
 	document.querySelector("#startload").addEventListener("click", function() {
 		document.querySelector("#file_load").click();
 	});
 
-	document.querySelector("#file_load").addEventListener("change", sm.add_cart);
+	document.querySelector("#file_load").addEventListener("change", function(evt) {
+		evt.target.value.split(';').forEach(function(thing) {
+			error.note(sprintf("LOAD: %s", thing));
+			sm.add(thing);
+		});
+
+		evt.target.value = '';
+	});
+
+	document.querySelector("#conf").addEventListener("click", function() { prefs.pop(); });
 	document.querySelector("#eject").addEventListener("click", sm.eject);
-	document.querySelector("#next").addEventListener("click", function() { mpl.next(); });
+	document.querySelector("#next").addEventListener("click", sm.next);
+	document.querySelector("#prev").addEventListener("click", sm.prev);
+	document.querySelector("#play").addEventListener("click", sm.playpause);
 
 
-	document.querySelector("#prev").addEventListener("click", function() {
-		if (sm.loaded != false) {
+
+	emitter.on('SM_add', function(info) {
+		console.log("SM_add rx", info.id);
+
+		var new_div = document.createElement('div');
+		new_div.className = 'cart';
+		new_div.id = info.id;
+		new_div.insertAdjacentHTML('afterbegin', sprintf("<div class='name'>%s</div>"+
+														 "<div class='state'></div>"+
+														 "<div class='time'>%s</div>"+
+														 "<div class='timeset icon'>&#xf017;</div>", info.name, info.runtime));
+
+
+		new_div.addEventListener('click', function() { sm.load(info.id, false); });
+
+
+		//new_div.querySelector('div.timeset').addEventListener('click', sm.set_cuetime);
 		
-			var pos = cart.getCartInfo(sm.loaded).files.indexOf(mpl.state.filename);
-			if (pos == 0) {
-				mpl.seek(0, 1);
-			} else {
-				mpl.previous();  
-			}
-		}
+		document.querySelector("#carts > div").appendChild(new_div);
+		
+	});
+
+	emitter.on('SM_eject', function(id) {
+		console.log('SM_eject rx', id);
+		var ele = document.getElementById(id);
+		ele.parentNode.removeChild(ele);
+	});
+
+	emitter.on('SM_warn', function(txt) {
+		console.log('SM_warn rx', txt);
+
+		var info_ele = document.querySelector("#info");
+
+		info_ele.innerHTML = txt;
+		info_ele.style.opacity = 1;
+
+		setTimeout(function() {
+			info_ele.style.opacity = 0;
+			//info_ele.innerHTML = '';
+		}, 3000);
+
+	});
+
+	emitter.on('SM_load', function(id) {
+		console.log('SM_load rx', id);
+		document.querySelectorAll("#carts .cart").forEach(function (e) { e.classList.remove("loaded"); });
+		document.getElementById(id).classList.add("loaded");
 	});
 
 
-	document.querySelector("#play").addEventListener("click", function() {
-		if (sm.loaded != false &&
-			mpl.state.meta_title == sm.SILENCE_FILE) {
+	emitter.on('SM_display', function(info) {
+		console.log('SM_display', info);
+		/*
+		var display = {
+			cart: 'Stopped',
+			cart_length: 0,
+			cart_position: 0,
+			track: '',
+			track_length: 0,
+			track_remain: 0,
+			percentage: 0,
+			state: 'PAUSED'
+		}
+		*/
 
-			sm.load_cart_id(sm.loaded, true);
+		document.getElementById('play').innerHTML = (info.state == 'PAUSED') ? "&#xf04b;" : "&#xf04c;";
+
+		var cartname_ele   = document.querySelector(".cartname");
+		var trackname_ele  = document.querySelector("p.trackname");
+		var tracknum_ele   = document.querySelector(".tracknum");
+		var tracknum_t_ele = document.querySelector(".tracknum .t");
+		var tracknum_o_ele = document.querySelector(".tracknum .o");
+		var time_ele       = document.querySelector("#display .time");
+		var fill_ele       = document.querySelector("#display .bar .fill");
+
+
+		if (cartname_ele.innerText.trim() != info.cart.trim())
+			cartname_ele.innerHTML = info.cart;
+
+		if (trackname_ele.innerText.trim() != info.track.trim())
+			trackname_ele.innerHTML = info.track;
+
+
+		if (info.cart_length == 0) {
+			tracknum_ele.style.display = 'none';
 		} else {
-			mpl.playpause(); 
+			tracknum_t_ele.innerHTML = info.cart_position;
+			tracknum_o_ele.innerHTML = info.cart_length;
+			tracknum_ele.style.display = 'block';
+		}
+
+		time_ele.innerHTML = (info.track_remain != 0) ? info.track_remain : '';
+
+		fill_ele.style.width = info.percentage + '%';
+
+	});
+
+
+	emitter.on('SM_cartstate', function(id, txt) {
+		console.log("SM_cartstate rx", id, txt);
+
+		if (id == false) {
+			document.querySelectorAll("#carts .cart .state").forEach(function(ele) {
+				ele.innerHTML = txt;
+			});
+		} else {
+			document.querySelector('#'+id+' .state').innerHTML = txt;
 		}
 
 	});
 
+
+	
+	// UI bindings
+	//
+	//
+	
+	/*
 
 
 
@@ -86,22 +215,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 
-
-
-
-	process.on('uncaughtException', error.report);
-	nw.Window.get().on('closed', function() {
-		error.note("cart cleanup");
-		cart.cleanup();
-		error.note("mplayer quit");
-		mpl.quit();
-		error.note("exit complete.");S
-	});
-
-	// finally, display the window
-	//nw.Window.setResizeable(false);
-	require("nw.gui").Window.get().setResizable(false);
-	nw.Window.get().show();
+	*/
 	
 
 

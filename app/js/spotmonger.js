@@ -305,15 +305,6 @@ var sm = {
 		return (parseInt(thing[0]) * 60) + parseInt(thing[1]);
 	},
 
-	width_over: function(ele) {
-		if (ele.prop('scrollWidth') > ele.width()) {
-			return true;
-		} else {
-			return false;
-		}
-	},
-
-
 	set_cuetime: function(evt) {
 
 		var id = evt.target.parentNode.id;
