@@ -23,7 +23,7 @@ var prefs = {
 
 			if (typeof(tmp_config) == "object") {
 
-				this.data = Object.assign({ }, tmp_config, this.defaults);
+				this.data = Object.assign({ }, this.defaults, tmp_config);
 		
 			} // do nothing because the defaults are already set
 

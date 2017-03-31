@@ -40,10 +40,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		window.opener.prefs.data.state_file     = document.getElementById("state_file").value;
 		window.opener.prefs.data.jack_noconnect = document.getElementById("jack_noconnect").checked;
 
-		window.opener.sm.show_info("Saved.  Restart for changes to take effect.");
+		window.opener.warn.do("Saved.  Restart for changes to take effect.");
 
 
-		window.opener.prefs.data.save();
+		window.opener.prefs.save();
 		window.close();
 	});
 });

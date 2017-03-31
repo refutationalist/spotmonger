@@ -60,29 +60,26 @@ document.addEventListener("DOMContentLoaded", function() {
 	
 	document.getElementById("set").addEventListener('click', function() {
 		if (settime.id == 0) return;
-		window.opener.cart.carts[settime.id].start_at = settime.stamp;
+		window.opener.sm.set_cue(settime.id, settime.stamp);
 		window.close();
 	});
 
 	document.getElementById("close").addEventListener('click', function() {
 		if (settime.id == 0) return;
-		window.opener.cart.carts[settime.id].start_at = 0;
+		window.opener.sm.set_cue(settime.id, settime.stamp);
 		window.close();
 	});
 
 
 });
 
-function setup(ti, tn) {
+function setup(ti, tn, ts) {
 	settime.id = ti;
 	document.getElementById("cart_name").innerHTML = tn;
+	window.opener.error.note("start time: "+ts);
 
-	window.opener.error.note("start time: "+
-							 window.opener.cart.carts[ti].start_at);
-
-	if (window.opener.cart.carts[ti].start_at != undefined &&
-		window.opener.cart.carts[ti].start_at != 0) {
-		settime.stamp = window.opener.cart.carts[ti].start_at;
+	if (ts != undefined && ts != 0) {
+		settime.stamp = ts;
 	} else {
 		settime.stamp = settime.now_stamp();
 	}

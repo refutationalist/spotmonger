@@ -1,3 +1,5 @@
+var sm; // so it can be called by settime
+
 
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -94,6 +96,34 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 		//new_div.querySelector('div.timeset').addEventListener('click', sm.set_cuetime);
+		//
+
+		new_div.querySelector('div.timeset').addEventListener('click', function(evt) {
+
+
+			var id = evt.target.parentNode.id;
+			var name = document.querySelector('#'+id+' .name').innerHTML;
+
+
+			nw.Window.open('settime.html', 
+						  {
+							  width: 450,
+							  height: 540,
+							  focus: true,
+							  frame: true,
+							  position: 'mouse'
+						  },
+						  function (win) {
+							  win.on('loaded', function() {
+								error.note("getting time window: "+id+" '"+name+"'");
+								win.window.setup(id, name, sm.get_cue(id));
+							  });
+
+
+						  });
+			evt.stopPropagation();
+
+		});
 		
 		document.querySelector("#carts > div").appendChild(new_div);
 		
@@ -107,16 +137,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	emitter.on('SM_warn', function(txt) {
 		console.log('SM_warn rx', txt);
-
-		var info_ele = document.querySelector("#info");
-
-		info_ele.innerHTML = txt;
-		info_ele.style.opacity = 1;
-
-		setTimeout(function() {
-			info_ele.style.opacity = 0;
-			//info_ele.innerHTML = '';
-		}, 3000);
+		warn.do(txt);
 
 	});
 
@@ -128,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 	emitter.on('SM_display', function(info) {
-		console.log('SM_display', info);
+		//console.log('SM_display', info);
 		/*
 		var display = {
 			cart: 'Stopped',

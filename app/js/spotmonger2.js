@@ -21,8 +21,12 @@ var Spotmonger_Control = function(in_config) {
 
 	var state = {
 		loaded: false,
-		stopclock: 0
+		stopclock: 0,
+		mpl_loop: false,
+		state_file_loop: false
 	}
+
+	// START INIT CODE
 
 	var path         = require('path');
 	var config = Object.assign({ }, default_config, in_config);
@@ -43,9 +47,32 @@ var Spotmonger_Control = function(in_config) {
 
 	mpl.init(function() {
 		error.note("starting mpl");
-		setInterval(loop, config.loopint);
+		state.mpl_loop = setInterval(loop, config.loopint);
 
 	});
+
+
+	
+	if (config.prefs.state_file != "") { // set up state file 
+		error.note("configuring state file");
+
+		state.state_file_loop = setInterval(function() {
+
+			try {
+				var dumpstate = mpl.state;
+				dumpstate.loaded = state.loaded
+				dumpstate.carts  = cart.carts;
+
+				require('fs').writeFileSync(config.prefs.state_file,
+											JSON.stringify(dumpstate, null, 4));
+			} catch (e) {
+				error.report("State File Error: "+e);
+			}
+		}, 500);
+	}
+
+
+	// END INIT CODE
 
 
 
@@ -53,8 +80,6 @@ var Spotmonger_Control = function(in_config) {
 	
 	function loop() {
 
-		error.note("loop!");
-		
 		update_display();
 
 
@@ -70,7 +95,7 @@ var Spotmonger_Control = function(in_config) {
 				delete cart.carts[id].start_at;
 			} else {
 
-				if (stopclock == 0) {
+				if (state.stopclock == 0) {
 					var diff = cart.carts[id].start_at - (Date.now() / 1000);
 
 
@@ -160,6 +185,7 @@ var Spotmonger_Control = function(in_config) {
 			warn("No cart loaded.");
 		} else {
 			mpl.loadfile(config.silence_file, false, true, function() {
+				cart.unload(state.loaded);
 				emitter.emit('SM_eject', state.loaded);
 				state.loaded = false;
 			});
@@ -186,6 +212,8 @@ var Spotmonger_Control = function(in_config) {
 			if (cart.carts[state.loaded].single != true) display.track = mpl.state.meta_title;
 
 			display.cart_length = cart.getCartFiles(state.loaded).length;
+
+			console.log("basename", mpl.state.filename, typeof(mpl.state.filename), path.basename(mpl.state.filename));
 			display.cart_position = cart.carts[state.loaded].files.indexOf( path.basename(mpl.state.filename) ) + 1;
 
 			display.track_length = int_to_time(parseInt(mpl.state.length));
@@ -232,11 +260,11 @@ var Spotmonger_Control = function(in_config) {
 	}
 
 	function start_stopclock() {
-		stopclock = Date.now() / 1000;
+		state.stopclock = Date.now() / 1000;
 	}
 
 	function end_stopclock() {
-		var diff = (Date.now() / 1000) - stopclock;
+		var diff = (Date.now() / 1000) - state.stopclock;
 
 		for (id in cart.carts) {
 			if (cart.carts[id].start_at != 0 &&
@@ -245,7 +273,7 @@ var Spotmonger_Control = function(in_config) {
 			}
 		}
 
-		stopclock = 0;
+		state.stopclock = 0;
 		
 	}
 
@@ -291,7 +319,6 @@ var Spotmonger_Control = function(in_config) {
 		},
 
 
-		cue: function(id, time) { },
 
 		destruct: function() { 
 			error.note("quitting mplayer");
@@ -302,7 +329,15 @@ var Spotmonger_Control = function(in_config) {
 			
 		},
 
-		dump_config: function() { console.log(config); }
+
+		get_cue: function(id) {
+			return cart.getCartInfo(id).start_at;
+		},
+
+		set_cue: function(id, stamp) {
+			cart.carts[id].start_at = stamp;
+		}
+
 
 
 	};

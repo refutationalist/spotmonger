@@ -322,7 +322,7 @@ var sm = {
 					  function (win) {
 						  win.on('loaded', function() {
 							error.note("getting time window: "+id+" '"+name+"'");
-							win.window.setup(id, name);
+							win.window.setup(id, name, sm.get_cue(id));
 						  });
 
 
