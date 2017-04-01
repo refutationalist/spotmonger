@@ -259,23 +259,6 @@ var Spotmonger_Control = function(in_config) {
 		return (parseInt(thing[0]) * 60) + parseInt(thing[1]);
 	}
 
-	function start_stopclock() {
-		state.stopclock = Date.now() / 1000;
-	}
-
-	function end_stopclock() {
-		var diff = (Date.now() / 1000) - state.stopclock;
-
-		for (id in cart.carts) {
-			if (cart.carts[id].start_at != 0 &&
-				cart.carts[id].start_at != undefined) {
-				cart.carts[id].start_at += diff;
-			}
-		}
-
-		state.stopclock = 0;
-		
-	}
 
 	function update_cartstate(id, txt) {
 		emitter.emit('SM_cartstate', id, txt);
@@ -336,6 +319,25 @@ var Spotmonger_Control = function(in_config) {
 
 		set_cue: function(id, stamp) {
 			cart.carts[id].start_at = stamp;
+		}, 
+
+		
+		pause_cue: function() {
+			state.stopclock = Date.now() / 1000;
+		},
+
+		unpause_cue: function() {
+			var diff = (Date.now() / 1000) - state.stopclock;
+
+			for (id in cart.carts) {
+				if (cart.carts[id].start_at != 0 &&
+					cart.carts[id].start_at != undefined) {
+					cart.carts[id].start_at += diff;
+				}
+			}
+
+			state.stopclock = 0;
+			
 		}
 
 

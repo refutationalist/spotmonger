@@ -72,6 +72,22 @@ document.addEventListener("DOMContentLoaded", function() {
 		evt.target.value = '';
 	});
 
+	document.querySelector("#stopclock").addEventListener("click", function() {
+		var main_e = document.getElementById('main');
+		var scb_e  = document.getElementById('stopclock');
+
+		if (main_e.classList.contains('stopclock')) {
+			main_e.classList.remove('stopclock');
+			sm.unpause_cue();
+			scb_e.classList.remove('pressed');
+		} else {
+			main_e.classList.add('stopclock');
+			sm.pause_cue();
+			scb_e.classList.add('pressed');
+		}
+	
+	});
+
 	document.querySelector("#conf").addEventListener("click", function() { prefs.pop(); });
 	document.querySelector("#eject").addEventListener("click", sm.eject);
 	document.querySelector("#next").addEventListener("click", sm.next);
@@ -95,8 +111,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		new_div.addEventListener('click', function() { sm.load(info.id, false); });
 
 
-		//new_div.querySelector('div.timeset').addEventListener('click', sm.set_cuetime);
-		//
 
 		new_div.querySelector('div.timeset').addEventListener('click', function(evt) {
 
@@ -209,35 +223,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	});
 
-
-	
-	// UI bindings
-	//
-	//
-	
-	/*
-
-
-
-	document.querySelector("#stopclock").addEventListener("click", function() {
-		//var main_e = document.getElementById("main");
-		//
-		document.getElementById('main').classList.toggle('stopclock');
-		var stb_e  = document.getElementById("stopclock");
-
-		if (sm.stopclock == false) {
-			//main_e.classList.add("stopclock");
-			stb_e.classList.add("pressed");
-			sm.do_stopclock();
-		} else {
-			//main_e.classList.remove("stopclock");
-			stb_e.classList.remove("pressed");
-			sm.undo_stopclock();
-		}
-	});
-
-	*/
-	
 
 
 });
