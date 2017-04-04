@@ -24,11 +24,12 @@ var prefs = {
 			if (typeof(tmp_config) == "object") {
 
 				this.data = Object.assign({ }, this.defaults, tmp_config);
-		
+
 			} // do nothing because the defaults are already set
 
 		} catch (e) {
 			error.report("Could not load config: "+e);
+			this.data = this.defaults;
 		}
 
 

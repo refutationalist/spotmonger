@@ -63,24 +63,23 @@ document.addEventListener("DOMContentLoaded", function() {
 		var win = nw.Window.get();
 
 		if (main_e.classList.contains('soundboard')) {
+
 			main_e.classList.remove('soundboard');
-			this.classList.remove('pressed');
-			//require("nw.gui").Window.get().setResizable(false);
 			win.unmaximize();
+			this.classList.remove('pressed');
 			win.resizeTo(820, 240);
-			win.setResizable(false);
 			win.title = "SpotMonger";
 			document.title = "SpotMonger";
+			win.setResizable(false);
+
 			
 		} else {
 			main_e.classList.add('soundboard');
 			this.classList.add('pressed');
-			//require("nw.gui").Window.get().setResizable(true);
 			win.setResizable(true);
 			win.maximize();
 			win.title = "SpotMonger -- SoundBoard Mode";
 			document.title = "SpotMonger -- SoundBoard Mode";
-			error.note(win.title);
 			
 			
 		}
@@ -212,7 +211,18 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 		*/
 
-		document.getElementById('play').innerHTML = (info.state == 'PAUSED') ? "&#xf04b;" : "&#xf04c;";
+		//document.getElementById('play').innerHTML = (info.state == 'PAUSED') ? "&#xf04b;" : "&#xf04c;";
+
+		var play_ele = document.getElementById('play');
+		var main_ele = document.getElementById('main');
+
+		if (info.state != 'PAUSED' && !(main_ele.classList.contains('playing')) ) {
+			main_ele.classList.add('playing');
+			play_ele.innerHTML = "&#xf04c;";
+		} else if (info.state == 'PAUSED' && main_ele.classList.contains('playing')) {
+			main_ele.classList.remove('playing');
+			play_ele.innerHTML = "&#xf04b;";
+		}
 
 		var cartname_ele   = document.querySelector(".cartname");
 		var trackname_ele  = document.querySelector("p.trackname");

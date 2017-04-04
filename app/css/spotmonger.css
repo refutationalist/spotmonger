@@ -130,6 +130,7 @@
 	border: 1px solid #888888;
 	box-shadow: inset 2px 2px 6px 0px rgba(50, 50, 50, 0.33);
 	color: #14173a;
+	transition: background-color 0.25s ease;
 
 
 	font-family: RobotoCondensed;
@@ -281,7 +282,33 @@
 /* display colors */
 
 .stopclock #display {
-	background: #d1858e;
+	background: #d1858e; 
+}
+
+.playing #display {
+	background: #71fd08;
+	/*animation: pulse 1.0s infinite;*/
+}
+@keyframes pulse {
+	0% {
+		background-color: inherit;
+
+	}
+	50% {
+		background-color: #ffffff;
+	}
+	100% {
+		background-color: inherit;
+	}
+}
+
+.stopclock.playing #display {
+	background: #ffe202;
+}
+
+.bluebackground #display {
+	background: #3706f5;
+	color: #f9fdfe;
 }
 
 
