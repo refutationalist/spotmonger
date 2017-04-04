@@ -57,6 +57,36 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	nw.Window.get().show();
+
+	document.getElementById('sndboard').addEventListener("click", function() {
+		var main_e = document.getElementById('main');
+		var win = nw.Window.get();
+
+		if (main_e.classList.contains('soundboard')) {
+			main_e.classList.remove('soundboard');
+			this.classList.remove('pressed');
+			//require("nw.gui").Window.get().setResizable(false);
+			win.unmaximize();
+			win.resizeTo(820, 240);
+			win.setResizable(false);
+			win.title = "SpotMonger";
+			document.title = "SpotMonger";
+			
+		} else {
+			main_e.classList.add('soundboard');
+			this.classList.add('pressed');
+			//require("nw.gui").Window.get().setResizable(true);
+			win.setResizable(true);
+			win.maximize();
+			win.title = "SpotMonger -- SoundBoard Mode";
+			document.title = "SpotMonger -- SoundBoard Mode";
+			error.note(win.title);
+			
+			
+		}
+
+
+	});
 	
 	
 	document.querySelector("#startload").addEventListener("click", function() {
@@ -107,7 +137,13 @@ document.addEventListener("DOMContentLoaded", function() {
 														 "<div class='timeset icon'>&#xf017;</div>", info.name, info.runtime));
 
 
-		new_div.addEventListener('click', function() { sm.load(info.id, false); });
+		new_div.addEventListener('click', function() { 
+
+			var autoplay = (document.getElementById('main').classList.contains('soundboard')) ? true : false;
+
+			sm.load(info.id, autoplay); 
+			
+		});
 
 
 
