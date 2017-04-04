@@ -2,7 +2,8 @@
 var MPlayerControl = function(mplayer, ports) {
 	this.mplayer         = mplayer;
 	this.flags           = [ '-slave', '-idle', '-noconfig', 'all',  
-							 '-quiet', '-nolirc', '-vo', 'null', '-demuxer', 'lavf' ];
+							 '-quiet', '-nolirc', '-vo', 'null', '-demuxer', 'lavf',
+							 '-channels', '2' ];
 	this.status_interval = 100;
 
 	this.online          = false;
@@ -12,7 +13,7 @@ var MPlayerControl = function(mplayer, ports) {
 	this.command_send    = null;
 
 	this.report_error = function(line) {
-		console.error(line);
+		alert(line);
 	}
 
 
@@ -77,6 +78,7 @@ MPlayerControl.prototype.init = function(callback) {
 
 		this.process.stdout.on('data', function(data) {
 
+
 			var lines = Buffer(data).toString('utf8').split('\n');
 
 			var regex = /^ANS_(\S+)=(.*)$/;
@@ -87,6 +89,7 @@ MPlayerControl.prototype.init = function(callback) {
 					m[2] = m[2].replace(/\'$/g, '').replace(/^\'/g, '');
 					m[1] = m[1].toLowerCase();
 					this.state[m[1]] = m[2];
+
 				}
 			}
 
@@ -178,12 +181,10 @@ MPlayerControl.prototype.loadfile = function(file, append, pausing, callback) {
 }
 
 MPlayerControl.prototype.loadlist = function(list, callback) {
-
-	var started = false;
-	for (l in list) {
-		this.loadfile(list[l], started, true);
-		started = true;
-
+	
+	this.loadfile(list.shift(), false, true);
+	for (var i = 0 ; i < list.length ; i++) {
+		this.loadfile(list[i], true, true);
 	}
 
 	if (typeof(callback) == "function") callback();

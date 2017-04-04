@@ -187,10 +187,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		var fill_ele       = document.querySelector("#display .bar .fill");
 
 
-		if (cartname_ele.innerText.trim() != info.cart.trim())
+		if (info.cart == undefined || (cartname_ele.innerText.trim() != info.cart.trim()))
 			cartname_ele.innerHTML = info.cart;
 
-		if (trackname_ele.innerText.trim() != info.track.trim())
+		if (info.track == undefined || (trackname_ele.innerText.trim() != info.track.trim()))
 			trackname_ele.innerHTML = info.track;
 
 

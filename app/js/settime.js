@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	document.getElementById("close").addEventListener('click', function() {
 		if (settime.id == 0) return;
-		window.opener.sm.set_cue(settime.id, settime.stamp);
+		window.opener.sm.set_cue(settime.id, null);
 		window.close();
 	});
 
@@ -164,7 +164,7 @@ var settime = {
 						   now.getMonth(),
 						   now.getDate());
 
-		return sod / 1000;
+		return parseInt(sod / 1000);
 	},
 
 	now_stamp: function() { // same.
@@ -182,11 +182,13 @@ var settime = {
 		var picked_stamp = total_seconds + this.today_stamp();
 
 		if (picked_stamp < this.now_stamp()) {
-			picked_stamp + 86400;
+			console.log("incrementing by a day");
+			picked_stamp += 86400;
 		}
 
 		this.stamp = picked_stamp;
-		console.log(total_seconds, picked_stamp);
+		console.log(total_seconds, picked_stamp, this.now_stamp(),
+					picked_stamp - this.now_stamp());
 
 	},
 

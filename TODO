@@ -1,4 +1,3 @@
-  * figure out the zero sched bug
   * "soundboard mode" for playing clips faster during shows
   * external control (http server, I assume)
   * verify licensing of included code and fonts (have a quick look before)
@@ -7,6 +6,3 @@
 	- mplayer location
 	- config file location
   * some sanity checking in the config file
-  * consider using one of the mplayer node modules that have been written since spotmonger
-  * post-jQuery optimization (querySelector to getElementById where approp)
-  * multiple file-add

@@ -30,7 +30,7 @@ var error = {
 		if (error.suppress == true) {	
 			// do something there
 			console.error("REPORT_ERROR", text, "suppressed");
-			sm.show_info("Error suppressed.  See logs for more information.");
+			warn.do("Error suppressed.  See logs for more information");
 			
 		} else {
 			console.error("REPORT_ERROR", text);

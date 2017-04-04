@@ -95,7 +95,14 @@ CartFiles.prototype.load        = function(file, callback) {
 				if (ffjson.format) {
 
 					var cart_data      = {};
-					cart_data.name = require('path').basename(file);
+
+					try {
+						cart_data.name = require('path').basename(file);
+					} catch (e) {
+						this.report_error("cart load basename fail: %s", e.message);
+					}
+
+
 					for (var k in ffjson.format.tags) {
 
 						if (k.toLowerCase() == "title") 
@@ -216,7 +223,18 @@ CartFiles.prototype.runtime     = function(id, callback) {
 						if (err) this.report_error("CF runtime: "+err);
 
 						var ffjson = JSON.parse(stdout);
-						var fidx = this.carts[id].files.indexOf(this.path.basename(ffjson.format.filename));
+
+						try {
+							var basename = this.path.basename(ffjson.format.filename);
+
+						} catch (e) {
+							this.report_error(sprintf("cart runtime basename fail: %s",
+													  e.message));
+
+						}
+
+
+						var fidx = this.carts[id].files.indexOf(basename);
 						this.carts[id].runtime += parseFloat(ffjson.format.duration);
 						this.carts[id].rtwait[fidx] = 1;
 

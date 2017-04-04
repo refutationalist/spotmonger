@@ -9,12 +9,12 @@ var Spotmonger_Control = function(in_config) {
 							note:   function(str) { console.log(str); }
 					  },
 		emitter:      null,
-		ffprobe:      "/usr/bin/ffprobeDEF",
-		mplayer:      "/usr/bin/mplayerDEF",
-		tar:          "/usr/bin/tarDEF",
+		ffprobe:      "/usr/bin/ffprobe",
+		mplayer:      "/usr/bin/mplayer",
+		tar:          "/usr/bin/tar",
 		prefs:        { },
 		silence_file: process.cwd()+'/silence.mp3',
-		loopint:      500,
+		loopint:      100,
 		endtok:       'CARTAMOC.SILENCE'
 	};
 
@@ -42,6 +42,9 @@ var Spotmonger_Control = function(in_config) {
 
 	var mpl  = new MPlayerControl(config.mplayer, 
 								 (config.prefs.jack_noconnect) ? "noconnect" : config.prefs.jack_ports);
+
+	mpl.report_error = error.note;
+
 	var cart = new CartFiles({
 								tar: config.tar,
 								ffprobe: config.ffprobe,
@@ -63,16 +66,19 @@ var Spotmonger_Control = function(in_config) {
 		state.state_file_loop = setInterval(function() {
 
 			try {
-				var dumpstate = mpl.state;
-				dumpstate.loaded = state.loaded
-				dumpstate.carts  = cart.carts;
+
+				var dumpstate = {
+									loaded: state.loaded,
+									carts: cart.carts,
+									mplayer: mpl.state
+				};
 
 				require('fs').writeFileSync(config.prefs.state_file,
 											JSON.stringify(dumpstate, null, 4));
 			} catch (e) {
 				error.report("State File Error: "+e);
 			}
-		}, 500);
+		}, config.loopint);
 	}
 
 
@@ -114,10 +120,13 @@ var Spotmonger_Control = function(in_config) {
 						delete cart.carts[id].start_at;
 
 					} else { // otherwise, update display
-						update_cartstate(id, 'Cued In: '+int_to_time(diff));
+
+
+
+						update_cartstate(id, ((state.loaded == id) ? 'Loaded &amp; Cued In: ' : 'Cued In: ')+int_to_time(diff));
 					}
 				} else {
-					update_cartstate(id, 'Clock Stopped');
+					update_cartstate(id, ((state.loaded == id) ? 'Loaded &amp; Clock Stopped' : 'Clock Stopped'));
 				}
 
 			}
@@ -150,7 +159,7 @@ var Spotmonger_Control = function(in_config) {
 		update_cartstate(false, '');
 		update_cartstate(id, "Loading");
 
-		mpl.stop(function() {
+		var do_load = function() {
 			mpl.loadlist(files, function() {
 
 				update_cartstate(id, "Loaded");
@@ -162,7 +171,14 @@ var Spotmonger_Control = function(in_config) {
 					mpl.playpause();
 				}
 			});
-		});
+		};
+
+		if (mpl.state.pause == "no") {
+			mpl.stop(do_load);
+		} else {
+			do_load();
+		}
+
 
 		
 	}
@@ -213,19 +229,31 @@ var Spotmonger_Control = function(in_config) {
 		if (state.loaded != false && mpl.state.meta_title != config.endtok) {
 
 			display.cart = cart.getCartInfo(state.loaded).name;
-			if (cart.carts[state.loaded].single != true) display.track = mpl.state.meta_title;
-
 			display.cart_length = cart.getCartFiles(state.loaded).length;
 
-			console.log("basename", mpl.state.filename, typeof(mpl.state.filename), path.basename(mpl.state.filename));
-			display.cart_position = cart.carts[state.loaded].files.indexOf( path.basename(mpl.state.filename) ) + 1;
 
-			display.track_length = int_to_time(parseInt(mpl.state.length));
-			display.track_remain = int_to_time(parseInt(mpl.state.length) - 
-											   parseInt(mpl.state.time_position));
+			var cartpos = -1;
+			if (mpl.state.filename != undefined) {
+				cartpos = cart.carts[state.loaded].files.indexOf( path.basename(mpl.state.filename) );
+			}
+
+			if (cartpos == -1) {
+				display.percentage = 0;
+				display.cart_position = 0;
+				display.track = '';
+
+			} else {
+				display.cart_position = cartpos + 1;
+				display.track = (cart.carts[state.loaded].single == true) ? '' : mpl.state.meta_title;
 
 
-			display.percentage = (mpl.state.time_position / mpl.state.length) * 100;
+				display.track_length = int_to_time(parseInt(mpl.state.length));
+				display.track_remain = int_to_time(parseInt(mpl.state.length) - 
+												   parseInt(mpl.state.time_position));
+
+
+				display.percentage = (mpl.state.time_position / mpl.state.length) * 100;
+			}
 
 			display.state = (mpl.state.pause == "no") ? 'PLAYING' : 'PAUSED';
 
@@ -234,11 +262,6 @@ var Spotmonger_Control = function(in_config) {
 		emitter.emit('SM_display', display);
 
 	}
-
-	/*
-	function reset_display() {
-	}
-	*/
 
 	function warn(str) {
 		emitter.emit('SM_warn', str);
@@ -323,6 +346,7 @@ var Spotmonger_Control = function(in_config) {
 
 		set_cue: function(id, stamp) {
 			cart.carts[id].start_at = stamp;
+			update_cartstate(id, ((state.loaded == id) ? "Loaded" : ""));
 		}, 
 
 		
