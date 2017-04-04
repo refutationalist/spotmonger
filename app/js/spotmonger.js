@@ -1,59 +1,90 @@
 
-var sm = {
+
+var Spotmonger_Control = function(in_config) {
+
+	// Config and Initialization
+	var default_config = {
+		error:        {
+							report: function(str) { console.error(str); },
+							note:   function(str) { console.log(str); }
+					  },
+		emitter:      null,
+		ffprobe:      "/usr/bin/ffprobeDEF",
+		mplayer:      "/usr/bin/mplayerDEF",
+		tar:          "/usr/bin/tarDEF",
+		prefs:        { },
+		silence_file: process.cwd()+'/silence.mp3',
+		loopint:      500,
+		endtok:       'CARTAMOC.SILENCE'
+	};
+
+
+	var state = {
+		loaded: false,
+		stopclock: 0,
+		mpl_loop: false,
+		state_file_loop: false
+	}
+
+	// START INIT CODE
+
+	var path         = require('path');
+	var config = Object.assign({ }, default_config, in_config);
+
+	var error   = config.error;
+	var emitter = config.emitter;
+	delete(config.error);
+	delete(config.emitter);
+
+	if (emitter == null) return false;
+
+
+
+	var mpl  = new MPlayerControl(config.mplayer, 
+								 (config.prefs.jack_noconnect) ? "noconnect" : config.prefs.jack_ports);
+	var cart = new CartFiles({
+								tar: config.tar,
+								ffprobe: config.ffprobe,
+								report_error: error.report
+							 });
+
+
+	mpl.init(function() {
+		error.note("starting mpl");
+		state.mpl_loop = setInterval(loop, config.loopint);
+
+	});
+
+
 	
-	PAUSE:        "&#xf04c;",
-	PLAY:         "&#xf04b;",
-	SILENCE_FILE: 'CARTAMOC.SILENCE',
+	if (config.prefs.state_file != "") { // set up state file 
+		error.note("configuring state file");
 
-	loaded: false,
-	stopclock: 0,
-	silence_file: process.cwd()+'/silence.mp3',
-	/* The silence file is a placeholder file so I know I've reached the
-	   end of a cart.   CHEEEEAP HAAAAACK! */
+		state.state_file_loop = setInterval(function() {
 
-	path: require('path'),
+			try {
+				var dumpstate = mpl.state;
+				dumpstate.loaded = state.loaded
+				dumpstate.carts  = cart.carts;
 
-
-	init: function() {
-
-		if (prefs.state_file != "") { // set up state file 
-
-			setInterval(function() {
-
-				try {
-					var dumpstate = mpl.state;
-
-					dumpstate.loaded = sm.loaded
-					dumpstate.carts  = cart.carts;
-
-					
-
-					require('fs').writeFileSync(prefs.state_file,
-												JSON.stringify(dumpstate, null, 4));
-				} catch (e) {
-					error.report("State File Error: "+e);
-				}
-			}, 500);
-		}
-
-	},
+				require('fs').writeFileSync(config.prefs.state_file,
+											JSON.stringify(dumpstate, null, 4));
+			} catch (e) {
+				error.report("State File Error: "+e);
+			}
+		}, 500);
+	}
 
 
-	loop: function() {  
-
-		// manage display
-		sm.update_cart_display();
+	// END INIT CODE
 
 
-		if (mpl.state.meta_title == sm.SILENCE_FILE ||
-			mpl.state.meta_title == undefined ||
-			sm.loaded == false) {
 
-			sm.clear_track_display();
+	// Private Methods
+	
+	function loop() {
 
-		} else {
-			sm.update_track_display();
-		}
+		update_display();
 
 
 		// manage scheduler
@@ -64,41 +95,37 @@ var sm = {
 			if (cart.carts[id].start_at == undefined) continue;
 
 			if (cart.carts[id].start_at == 0) { // if cue is at 0, clear display
-				sm.update_cartstate(id, '');
+				update_cartstate(id, '');
 				delete cart.carts[id].start_at;
 			} else {
 
-				if (sm.stopclock == 0) {
+				if (state.stopclock == 0) {
 					var diff = cart.carts[id].start_at - (Date.now() / 1000);
 
 
 					if (diff <= 0) { // if we're past cue time, fire cue
 
 						if (prefs.cue_command != "") {
-							sm.do_cue_fire(id);
+							cue_fire(id);
 						} else {
-							sm.load_cart_id(id, true);
+							load_cart(id, true);
 						}
 
 						delete cart.carts[id].start_at;
 
 					} else { // otherwise, update display
-						sm.update_cartstate(id, 'Cued In: '+sm.int_to_time(diff));
+						update_cartstate(id, 'Cued In: '+int_to_time(diff));
 					}
 				} else {
-					sm.update_cartstate(id, 'Clock Stopped');
+					update_cartstate(id, 'Clock Stopped');
 				}
-
 
 			}
 
-
 		}
+	}
 
-	},
-
-
-	do_cue_fire: function(id) {
+	function cue_fire(id) {
 		try {
 			require('child_process').exec(prefs.cue_command, 
 										  function(err, stdout, stderr) {
@@ -106,187 +133,119 @@ var sm = {
 				if (err)    error.report("Cue Command Err: "+err);
 				if (stderr) error.report("Cue Command STDERR: "+stderr);
 
-				sm.load_cart_id(id, true);
+				load_cart(id, true);
 
 
 			});
 		} catch (e) {
 			error.report("Cue Command Exec Failure: "+e);
-			sm.load_cart_id(id, true);
+			load_cart(id, true);
 		}
-	},
+	}
 
-
-	load_cart: function(evt) {
-		var id = evt.currentTarget.id;
-		sm.load_cart_id(id, false);
-	},
-
-	load_cart_id: function(id, autoplay) {
-
+	function load_cart(id, autoplay) {
 		var files = cart.getCartFiles(id);
-		files.push(sm.silence_file); // add slience file to detect end of cart
+		files.push(config.silence_file); // add slience file to detect end of cart
 
-		sm.update_cartstate(false, '');
-		sm.update_cartstate(id, "Loading");
+		update_cartstate(false, '');
+		update_cartstate(id, "Loading");
 
 		mpl.stop(function() {
 			mpl.loadlist(files, function() {
-				sm.update_cartstate(id, "Loaded");
 
-				document.querySelectorAll("#carts .cart").forEach(function (e) { e.classList.remove("loaded"); });
-				document.querySelector('#'+id).classList.add("loaded");
+				update_cartstate(id, "Loaded");
+				emitter.emit('SM_load', id);
+				state.loaded = id;
 
-				sm.loaded = id;
+
 				if (autoplay == true) {
 					mpl.playpause();
 				}
 			});
 		});
 
+		
+	}
 
-
-	},
-
-	add_cart: function(evt) {
-
-
-		//var file_ui = $(this).val();
-		//$(this).val('');
-		var file_ui = evt.target.value;
-		evt.target.value = '';
-
-
-		cart.load(file_ui, function(id) {
+	function add_cart(file) {
+		
+		cart.load(file, function(id) {
 
 			var info = cart.getCartInfo(id);
-
-			var new_div = document.createElement('div');
-			new_div.className = 'cart';
-			new_div.id = id;
-
-			new_div.insertAdjacentHTML('afterbegin', sprintf("<div class='name'>%s</div>"+
-															 "<div class='state'></div>"+
-															 "<div class='time'></div>"+
-															 "<div class='timeset icon'>&#xf017;</div>", info.name));
-
-
+			info.id = id;
 
 			cart.runtime(id, function(id) {
-				var time = sm.int_to_time(cart.getCartInfo(id).runtime);
-				new_div.querySelector('div.time').innerHTML = time;
-
+				info.runtime = int_to_time(cart.getCartInfo(id).runtime);
+				emitter.emit('SM_add', info);
 			});
 
 
-
-			new_div.addEventListener('click', sm.load_cart);
-			new_div.querySelector('div.timeset').addEventListener('click', sm.set_cuetime);
-
-			document.querySelector("#carts > div").appendChild(new_div);
 		});
+	}
 
-	},
-
-	eject: function() {
-
-		if (sm.loaded == false) {
-			sm.show_info("No cart loaded.");
+	function remove_cart() {
+		
+		if (state.loaded == false) {
+			warn("No cart loaded.");
 		} else {
-
-			mpl.loadfile(sm.silence_file, false, true, function() {
-				var element = document.querySelector('#'+sm.loaded);
-				element.parentNode.removeChild(element);
-
-				cart.unload(sm.loaded);
-				sm.loaded = false;
+			mpl.loadfile(config.silence_file, false, true, function() {
+				cart.unload(state.loaded);
+				emitter.emit('SM_eject', state.loaded);
+				state.loaded = false;
 			});
 
 		}
-	},
+	}
 
-	update_cart_display: function() {
-		var newname = (sm.loaded == false) ? "Stopped" : cart.getCartInfo(sm.loaded).name;
-		var element = document.querySelector(".cartname");
+	function update_display() {
 
-		if (element.innerText.trim() != newname.trim()) {
-			console.log("ucd fires");
-			element.innerHTML = newname;
-		}
-	},
-
-	clear_track_display: function() {
-
-		document.querySelector(".trackname").innerHTML = "";
-		document.querySelector(".tracknum").style.display = "none";
-		document.querySelector("#display .time").innerHTML = "";
-		document.querySelector("#display .bar .fill").style.width = "0%";
-		document.querySelector("#play").innerHTML = sm.PLAY;
-
-	},
-
-	update_track_display: function() {
-
-		var trackname_ele  = document.querySelector("p.trackname");
-		var tracknum_ele   = document.querySelector(".tracknum");
-		var tracknum_t_ele = document.querySelector(".tracknum .t");
-		var tracknum_o_ele = document.querySelector(".tracknum .o");
-		var time_ele       = document.querySelector("#display .time");
-		var fill_ele       = document.querySelector("#display .bar .fill");
-
-		document.querySelector("#play").innerHTML = (mpl.state.pause == "no") ? sm.PAUSE : sm.PLAY;
-
-		// determine title and show
-
-		var trackname = mpl.state.filename;
-
-		if (cart.carts[sm.loaded].single == true) {
-			trackname = '';
-		} else if (mpl.state.meta_title != "") {
-			trackname = mpl.state.meta_title;
+		var display = {
+			cart: 'Stopped',
+			cart_length: 0,
+			cart_position: 0,
+			track: '',
+			track_length: 0,
+			track_remain: 0,
+			percentage: 0,
+			state: 'PAUSED'
 		}
 
-		if (trackname.trim() != trackname_ele.innerText.trim())
-			trackname_ele.innerHTML = trackname;
+		if (state.loaded != false && mpl.state.meta_title != config.endtok) {
+
+			display.cart = cart.getCartInfo(state.loaded).name;
+			if (cart.carts[state.loaded].single != true) display.track = mpl.state.meta_title;
+
+			display.cart_length = cart.getCartFiles(state.loaded).length;
+
+			console.log("basename", mpl.state.filename, typeof(mpl.state.filename), path.basename(mpl.state.filename));
+			display.cart_position = cart.carts[state.loaded].files.indexOf( path.basename(mpl.state.filename) ) + 1;
+
+			display.track_length = int_to_time(parseInt(mpl.state.length));
+			display.track_remain = int_to_time(parseInt(mpl.state.length) - 
+											   parseInt(mpl.state.time_position));
 
 
+			display.percentage = (mpl.state.time_position / mpl.state.length) * 100;
 
-		// show track numbering
+			display.state = (mpl.state.pause == "no") ? 'PLAYING' : 'PAUSED';
 
-		tracknum_t_ele.innerHTML = cart.carts[sm.loaded].files.indexOf( sm.path.basename(mpl.state.filename) ) + 1;
-		tracknum_o_ele.innerHTML = cart.getCartFiles(sm.loaded).length;
-		tracknum_ele.style.display = "block";
+		}
 
-		// time remaining // FIXME min/secify
-		time_ele.innerHTML = sm.int_to_time(parseInt(mpl.state.length) - 
-											parseInt(mpl.state.time_position));
+		emitter.emit('SM_display', display);
 
+	}
 
-		// fill bar
-		var myperc = (mpl.state.time_position / mpl.state.length) * 100;
-		fill_ele.style.width = myperc+"%";
+	/*
+	function reset_display() {
+	}
+	*/
 
-	},
+	function warn(str) {
+		emitter.emit('SM_warn', str);
+	}
 
-
-	show_info: function(str) {
-
-		var info_ele = document.querySelector("#info");
-
-		info_ele.innerHTML = str;
-		info_ele.style.opacity = 1;
-
-		setTimeout(function() {
-			info_ele.style.opacity = 0;
-			//info_ele.innerHTML = '';
-		}, 3000);
-
-	},
-
-	// helper functions
-
-	int_to_time: function(str) {
-
+	function int_to_time(str) {
+		
 		var rawsecs = parseInt(str);
 
 		var minutes = Math.floor(rawsecs / 60);
@@ -298,78 +257,97 @@ var sm = {
 
 		return minutes+":"+seconds;
 
-	},
+	}
 
-	time_to_int: function(str) {
-		var thing = str.split(":");
+	function time_to_int(str) {
 		return (parseInt(thing[0]) * 60) + parseInt(thing[1]);
-	},
-
-	set_cuetime: function(evt) {
-
-		var id = evt.target.parentNode.id;
-		var name = document.querySelector('#'+id+' .name').innerHTML;
+	}
 
 
-		nw.Window.open('settime.html', 
-					  {
-						  width: 450,
-						  height: 540,
-						  focus: true,
-						  frame: true,
-						  position: 'mouse'
-					  },
-					  function (win) {
-						  win.on('loaded', function() {
-							error.note("getting time window: "+id+" '"+name+"'");
-							win.window.setup(id, name, sm.get_cue(id));
-						  });
-
-
-					  });
-		evt.stopPropagation();
-
-		
-
-
-	},
-
-
-	do_stopclock: function() {
-		sm.stopclock = Date.now() / 1000;
-	},
-
-
-	undo_stopclock: function() {
-		var diff = (Date.now() / 1000) - sm.stopclock;
-
-		for (id in cart.carts) {
-			if (cart.carts[id].start_at != 0 &&
-				cart.carts[id].start_at != undefined) {
-				cart.carts[id].start_at += diff;
-			}
-		}
-
-		sm.stopclock = 0;
-	
-	},
-
-	update_cartstate: function(id, txt) {
-		console.log("in update_cartstate", id, txt);
-
-		if (id == false) {
-			document.querySelectorAll("#carts .cart .state").forEach(function(ele) {
-				ele.innerHTML = txt;
-			});
-		} else {
-			document.querySelector('#'+id+' .state').innerHTML = txt;
-		}
+	function update_cartstate(id, txt) {
+		emitter.emit('SM_cartstate', id, txt);
 
 	}
 
 
+	return {
+		add: function(file) { return add_cart(file); },
+		eject: function(id) { return remove_cart(id); },
+		load: function(id, autoplay) { return load_cart(id, autoplay); },
 
 
+		next: function() { 
+			mpl.next();	
+		},
+
+		prev: function() { 
+			if (state.loaded != false) {
+			
+				var pos = cart.getCartInfo(state.loaded).files.indexOf(mpl.state.filename);
+				if (pos == 0) {
+					mpl.seek(0, 1);
+				} else {
+					mpl.previous();  
+				}
+
+			}
+		},
+
+
+		playpause: function() { 
+			
+			if (state.loaded != false &&
+				mpl.state.meta_title == config.endtok) {
+				load_cart(state.loaded, true);
+			} else {
+				mpl.playpause(); 
+			}
+
+		},
+
+
+
+		destruct: function() { 
+			error.note("quitting mplayer");
+			mpl.quit();
+
+			error.note("cart cleanup");
+			cart.cleanup();
+			
+		},
+
+
+		get_cue: function(id) {
+			return cart.getCartInfo(id).start_at;
+		},
+
+		set_cue: function(id, stamp) {
+			cart.carts[id].start_at = stamp;
+		}, 
+
+		
+		pause_cue: function() {
+			state.stopclock = Date.now() / 1000;
+		},
+
+		unpause_cue: function() {
+			var diff = (Date.now() / 1000) - state.stopclock;
+
+			for (id in cart.carts) {
+				if (cart.carts[id].start_at != 0 &&
+					cart.carts[id].start_at != undefined) {
+					cart.carts[id].start_at += diff;
+				}
+			}
+
+			state.stopclock = 0;
+			
+		}
+
+
+
+	};
 
 
 };
+

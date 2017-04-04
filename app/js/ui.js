@@ -65,7 +65,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	document.querySelector("#file_load").addEventListener("change", function(evt) {
 		evt.target.value.split(';').forEach(function(thing) {
-			error.note(sprintf("LOAD: %s", thing));
 			sm.add(thing);
 		});
 
@@ -97,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 	emitter.on('SM_add', function(info) {
-		console.log("SM_add rx", info.id);
+		//console.log("SM_add rx", info.id);
 
 		var new_div = document.createElement('div');
 		new_div.className = 'cart';
@@ -144,19 +143,19 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	emitter.on('SM_eject', function(id) {
-		console.log('SM_eject rx', id);
+		//console.log('SM_eject rx', id);
 		var ele = document.getElementById(id);
 		ele.parentNode.removeChild(ele);
 	});
 
 	emitter.on('SM_warn', function(txt) {
-		console.log('SM_warn rx', txt);
+		//console.log('SM_warn rx', txt);
 		warn.do(txt);
 
 	});
 
 	emitter.on('SM_load', function(id) {
-		console.log('SM_load rx', id);
+		//console.log('SM_load rx', id);
 		document.querySelectorAll("#carts .cart").forEach(function (e) { e.classList.remove("loaded"); });
 		document.getElementById(id).classList.add("loaded");
 	});
@@ -205,13 +204,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		time_ele.innerHTML = (info.track_remain != 0) ? info.track_remain : '';
 
+		if (info.percentage < 0) {
+			info.percentage = 0;
+		} 
+
+		
+
 		fill_ele.style.width = info.percentage + '%';
 
 	});
 
 
 	emitter.on('SM_cartstate', function(id, txt) {
-		console.log("SM_cartstate rx", id, txt);
+		//console.log("SM_cartstate rx", id, txt);
 
 		if (id == false) {
 			document.querySelectorAll("#carts .cart .state").forEach(function(ele) {
