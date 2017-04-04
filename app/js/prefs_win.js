@@ -13,6 +13,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById('jack_ports').disabled = true;
 	}
 
+
+	if (window.opener.prefs.data.end_warning == true) {
+		document.getElementById('end_warning').checked = true;
+	}
+
 	document.getElementById('jack_noconnect').addEventListener('change', function(evt) {
 
 		var state;
@@ -39,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		window.opener.prefs.data.cue_command    = document.getElementById("cue_command").value;
 		window.opener.prefs.data.state_file     = document.getElementById("state_file").value;
 		window.opener.prefs.data.jack_noconnect = document.getElementById("jack_noconnect").checked;
+		window.opener.prefs.data.end_warning    = document.getElementById("end_warning").checked;
 
 		window.opener.warn.do("Saved.  Restart for changes to take effect.");
 

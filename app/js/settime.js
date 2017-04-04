@@ -76,7 +76,6 @@ document.addEventListener("DOMContentLoaded", function() {
 function setup(ti, tn, ts) {
 	settime.id = ti;
 	document.getElementById("cart_name").innerHTML = tn;
-	window.opener.error.note("start time: "+ts);
 
 	if (ts != undefined && ts != 0) {
 		settime.stamp = ts;
@@ -133,7 +132,6 @@ var settime = {
 	},
 
 	increment: function(ele, direction, up_limit) {
-		console.log(ele.value);
 		var val = parseInt(ele.value);
 		val = (direction == DOWN) ? val - 1 : val + 1;
 
@@ -141,11 +139,7 @@ var settime = {
 		if (val < 0) val = up_limit;
 
 		ele.value = this.pad(val, 2);
-
-		//process.stdout.write(val + "\n");
-		console.log(val);
 		return val;
-
 	},
 
 	directset: function(ele, value, up_limit) {

@@ -254,9 +254,44 @@ document.addEventListener("DOMContentLoaded", function() {
 			info.percentage = 0;
 		} 
 
-		
-
 		fill_ele.style.width = info.percentage + '%';
+
+
+		// If Not in soundboard mode AND
+		// 		if (is not single) and (non-zero track length) and ((last 20 seconds of 2nd to last track) or (is last track))
+		// 		if (is single) and (last 20 seconds of track and track length non-zero)
+		//
+		//
+
+		if (prefs.data.end_warning == true) {
+
+			if (!main_ele.classList.contains('soundboard')) {
+
+				if (  
+					 ( (info.cart_length != 1) && ( info.track_remain_s != 0) &&
+						(
+						   (info.cart_position == (info.cart_length - 1) && info.track_remain_s <= 20) ||
+						   (info.cart_position == info.cart_length)
+						)
+					 ) ||
+					 ( (info.cart_length == 1) && ( (info.track_remain_s <= 20) && info.track_remain_s != 0 ) )
+					) {
+
+
+					if (!main_ele.classList.contains('ending_soon')) main_ele.classList.add('ending_soon');
+
+
+
+				} else {
+
+					if (main_ele.classList.contains('ending_soon')) main_ele.classList.remove('ending_soon');
+
+				}
+			} else {
+				if (main_ele.classList.contains('ending_soon')) main_ele.classList.remove('ending_soon');
+			}
+		}
+
 
 	});
 

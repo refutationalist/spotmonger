@@ -118,8 +118,6 @@ CartFiles.prototype.load        = function(file, callback) {
 
 					this.carts[id] = cart_data;
 
-					console.log(file, newfile, "fake cart data", cart_data);
-					console.log(file, newfile, "duration", ffjson.format.duration, cart_data.runtime);
 				
 					callback(id);
 

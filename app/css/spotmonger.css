@@ -289,18 +289,6 @@
 	background: #71fd08;
 	/*animation: pulse 1.0s infinite;*/
 }
-@keyframes pulse {
-	0% {
-		background-color: inherit;
-
-	}
-	50% {
-		background-color: #ffffff;
-	}
-	100% {
-		background-color: inherit;
-	}
-}
 
 .stopclock.playing #display {
 	background: #ffe202;
@@ -310,5 +298,39 @@
 	background: #3706f5;
 	color: #f9fdfe;
 }
+
+.playing.ending_soon #display {
+	animation: greenpulse 1.0s infinite;
+}
+@keyframes greenpulse {
+	0% {
+		background-color: #71fd08;
+
+	}
+	50% {
+		background-color: #c1c5ae;
+	}
+	100% {
+		background-color: #71fd08;
+	}
+}
+
+
+.stopclock.playing.ending_soon #display {
+	animation: orangepulse 1.0s infinite;
+}
+@keyframes orangepulse {
+	0% {
+		background-color: #ffe202;
+
+	}
+	50% {
+		background-color: #c1c5ae;
+	}
+	100% {
+		background-color: #ffe202;
+	}
+}
+
 
 

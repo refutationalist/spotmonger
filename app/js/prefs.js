@@ -5,11 +5,12 @@ var prefs = {
 		jack_ports:     "system.*playback_[12]", // port regex to connect to.  passed to mplayer.
 		jack_noconnect: false, // or, just don't connect and let something else handle it
 		cue_command:    "", // command to call when countdown reaches zero
-		state_file:     "" // json state file for external usage
+		state_file:     "", // json state file for external usage
+		end_warning:    "" // warn on end of track
 	},
 
 
-	config_file:   process.env.HOME+"/.spotmongerrc",
+	config_file:   nw.App.dataPath+"/spotmongerrc",
 	is_open: false,
 	win: false,
 
@@ -52,7 +53,7 @@ var prefs = {
 				this.win = nw.Window.open('prefs_win.html', 
 										  {
 											width: 616,
-											height: 364,
+											height: 464,
 											frame: true,
 											position: "mouse",
 											focus: true

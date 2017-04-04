@@ -222,6 +222,7 @@ var Spotmonger_Control = function(in_config) {
 			track: '',
 			track_length: 0,
 			track_remain: 0,
+			track_remain_s: 0,
 			percentage: 0,
 			state: 'PAUSED'
 		}
@@ -248,8 +249,8 @@ var Spotmonger_Control = function(in_config) {
 
 
 				display.track_length = int_to_time(parseInt(mpl.state.length));
-				display.track_remain = int_to_time(parseInt(mpl.state.length) - 
-												   parseInt(mpl.state.time_position));
+				display.track_remain_s = parseInt(mpl.state.length) - parseInt(mpl.state.time_position);
+				display.track_remain = int_to_time(display.track_remain_s);
 
 
 				display.percentage = (mpl.state.time_position / mpl.state.length) * 100;
