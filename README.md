@@ -19,3 +19,4 @@ New features in 1.3:
   * "Clock Stop" for cue clock pausing
   * "Soundboard" mode where carts play immediately
   * Playing, stopping, and end of track indicators in display
+  * Simple "spotmaker" shell script for creating useable cart files
