@@ -31,6 +31,9 @@ mkdir -p work/mk/usr/share/icons/hicolor/512x512/apps/
 inkscape -z -e work/mk/usr/share/icons/hicolor/512x512/apps/spotmonger.png -w 512 -h 512 icons/spotmonger.svg
 
 
+mkdir -p work/mk/usr/share/icons/hicolor/1024x1024/apps/
+inkscape -z -e work/mk/usr/share/icons/hicolor/1024x1024/apps/spotmonger.png -w 1024 -h 1024 icons/spotmonger.svg
+
 mkdir -p work/mk/usr/share/spotmonger
 
 cp work/mk/usr/share/icons/hicolor/256x256/apps/spotmonger.png app/icon.png
@@ -48,6 +51,8 @@ cp package/spotmonger.exec work/mk/usr/bin/spotmonger
 cp package/PKGBUILD work
 cp package/spotmonger.install work
 cp package/spotmonger.desktop work/mk/usr/share/applications
+cp spotmaker/spotmaker work/mk/usr/bin
+chmod 0755 work/mk/usr/bin/spotmaker
 
 cd work/
 tar zcvf spotmonger.tgz mk

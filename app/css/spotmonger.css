@@ -49,7 +49,7 @@
 }
 
 #carts div.cart:active {
-	background: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%); /* W3C */
+	background: linear-gradient(to bottom, #828282 0%, #7d7e7d 100%); /* W3C */
 	color: #ffffff;
 }
 
@@ -86,7 +86,7 @@
 #carts div.cart .timeset {
 	border-left: 1px solid #cccccc;
 	color: #aaaaaa;
-	font-size: 33px;
+	font-size: 30px;
 	height: 50px;
 	line-height: 50px;
 	position: absolute;
@@ -94,6 +94,7 @@
 	text-align: center;
 	top: 0;
 	width: 50px;
+	white-space: nowrap;
 }
 
 #carts div.loaded {

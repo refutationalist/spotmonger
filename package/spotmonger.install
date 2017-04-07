@@ -1,6 +1,9 @@
 post_install() {
   gtk-update-icon-cache -q -t -f usr/share/icons/hicolor
   update-desktop-database -q
+  echo "Note that the config file location has changed:"
+  echo "     from ~/.spotmongerrc to ~/.config/SpotMonger/Default/spotmongerrc"
+  echo "(to bring it more in line with an nwjs app)"
 }
 
 post_upgrade() {

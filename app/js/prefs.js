@@ -52,6 +52,7 @@ var prefs = {
 				this.is_open = true;
 				this.win = nw.Window.open('prefs_win.html', 
 										  {
+										    resizable: false,
 											width: 616,
 											height: 464,
 											frame: true,
@@ -59,6 +60,7 @@ var prefs = {
 											focus: true
 										  }, 
 										  function (win) {
+											  win.setResizable(false);
 											  win.on('closed', function() {
 												  prefs.is_open = false;
 											  });

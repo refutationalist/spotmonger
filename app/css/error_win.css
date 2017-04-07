@@ -30,6 +30,17 @@ div.error_logs button {
 	height: 40px;
 	display: block;
 	float: left;
-	margin-left: 50px;
 }
 
+
+#suppress {
+	position: absolute;
+	left: 20px;
+	bottom: 10px;
+}
+
+#close {
+	position: absolute;
+	right: 20px;
+	bottom: 10px;
+}
