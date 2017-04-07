@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		var win = nw.Window.get();
 
 		if (main_e.classList.contains('soundboard')) {
-
+			win.hide();
 			main_e.classList.remove('soundboard');
 			win.unmaximize();
 			this.classList.remove('pressed');
@@ -71,15 +71,18 @@ document.addEventListener("DOMContentLoaded", function() {
 			win.title = "SpotMonger";
 			document.title = "SpotMonger";
 			win.setResizable(false);
+			win.show();
 
 			
 		} else {
+			win.hide();
 			main_e.classList.add('soundboard');
 			this.classList.add('pressed');
 			win.setResizable(true);
 			win.maximize();
 			win.title = "SpotMonger -- SoundBoard Mode";
 			document.title = "SpotMonger -- SoundBoard Mode";
+			win.show();
 			
 			
 		}
@@ -159,7 +162,8 @@ document.addEventListener("DOMContentLoaded", function() {
 							  height: 540,
 							  focus: true,
 							  frame: true,
-							  position: 'mouse'
+							  position: 'mouse',
+							  title: "SpotMonger Time Select"
 						  },
 						  function (win) {
 							  win.on('loaded', function() {

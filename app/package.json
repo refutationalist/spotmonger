@@ -1,11 +1,11 @@
 {
 	"name":        "SpotMonger",
 	"description": "Cart Player and Soundboard for Broadcasters",
-	"version":     "1.3.0",
+	"version":     "1.3.1",
 	"main":        "spotmonger.html",
 	"window": {
-		"title":      "SpotMonger",
 		"icon":       "icon.png",
+		"title":      "SpotMonger",
 		"width":      820,
 		"height":     240,
 		"resizable":  false,

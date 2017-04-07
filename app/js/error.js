@@ -61,7 +61,8 @@ var error = {
 									 height:   error.ERRWIN_HEIGHT,
 									 frame:    true,
 									 position: 'mouse',
-									 focus:    true
+									 focus:    true,
+									 title:    "SpotMonger Error Log"
 								 }, 
 								 function (newwin) { // avoid something dumb
 								 	newwin.on('loaded', function() {

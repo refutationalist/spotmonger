@@ -54,10 +54,11 @@ var prefs = {
 										  {
 										    resizable: false,
 											width: 616,
-											height: 464,
+											height: 520,
 											frame: true,
 											position: "mouse",
-											focus: true
+											focus: true,
+											title: "SpotMonger Preferences"
 										  }, 
 										  function (win) {
 											  win.setResizable(false);

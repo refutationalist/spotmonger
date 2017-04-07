@@ -95,7 +95,13 @@
 	top: 0;
 	width: 50px;
 	white-space: nowrap;
+	font-family: FontAwesome;
 }
+#carts div.cart .timeset:after {
+	content: \f107;
+}
+
+
 
 #carts div.loaded {
 	background: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%); /* W3C */

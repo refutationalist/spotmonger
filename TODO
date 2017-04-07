@@ -6,3 +6,5 @@
 	- mplayer location
 	- config file location
   * some sanity checking in the config file
+
+  * nw.js bug: figure out relationship between at-launch error and timeset icon invisibility

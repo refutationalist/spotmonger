@@ -1,9 +1,8 @@
 # Maintainer: Sam Mulvey <github@refutationalist.com>
-# AS YET UNRELEASED
 pkgname=spotmonger
-pkgver=1.3.0
+pkgver=1.3.1
 pkgrel=1
-pkgdesc="interface to music on console to work as a cartplayer"
+pkgdesc="broadcast cart-player oriented audio player"
 arch=('x86_64' 'i686')
 url="http://sam.vis.nu/"
 license=('GPL')
