@@ -1,9 +1,7 @@
 SpotMonger
 ==========
 
-![SpotMonger as of May 2016](https://raw.githubusercontent.com/refutationalist/spotmonger/master/example.png)
-
-**Note:** Master branch doesn't work as of 2017-3-29.  Use tag v1.1 for something known to work.
+![SpotMonger as of Apr 2017](https://raw.githubusercontent.com/refutationalist/spotmonger/master/example.png)
 
 SpotMonger is a basic "cart player," a broadcast studio tool for playing pre-recorded audio segments, jingles, leads, and other incidental audio.  SpotMonger extends that by allowing timed cueing, useful for scheduling commercial breaks.   It is optimized for touchscreens.
 
@@ -14,3 +12,10 @@ If you're into Arch Linux and weirdness, you're pretty much in good shape to get
 The (eventual) end users would be podcast producers who prefer live production, and community radio broadcasters.
 
 I'll call this all GPLv3 for now unless a better idea comes along.  Includes jQuery, [Font Awesome](https://fortawesome.github.io/Font-Awesome/) and some fonts from the Google Web Fonts kit.   As I didn't originally plan on releasing this, I may need to change some of that around as time goes on.
+
+New features in 1.3:
+  * jquery removed (css3 animations)
+  * spotmonger UI rewrite
+  * "Clock Stop" for cue clock pausing
+  * "Soundboard" mode where carts play immediately
+  * Playing, stopping, and end of track indicators in display
