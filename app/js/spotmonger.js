@@ -111,7 +111,7 @@ var Spotmonger_Control = function(in_config) {
 
 					if (diff <= 0) { // if we're past cue time, fire cue
 
-						if (prefs.cue_command != "") {
+						if (config.prefs.cue_command != "") {
 							cue_fire(id);
 						} else {
 							load_cart(id, true);
@@ -136,7 +136,7 @@ var Spotmonger_Control = function(in_config) {
 
 	function cue_fire(id) {
 		try {
-			require('child_process').exec(prefs.cue_command, 
+			require('child_process').exec(config.prefs.cue_command, 
 										  function(err, stdout, stderr) {
 
 				if (err)    error.report("Cue Command Err: "+err);
