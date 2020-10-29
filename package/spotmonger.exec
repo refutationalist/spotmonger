@@ -1,2 +1,2 @@
 #!/bin/sh
-exec nw /usr/share/spotmonger/spotmonger.nw $*
+exec nw /usr/lib/spotmonger.nw $*

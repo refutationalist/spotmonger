@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	document.querySelector("#jack_ports").value =  window.opener.prefs.data.jack_ports;
 	document.querySelector("#cue_command").value = window.opener.prefs.data.cue_command;
-	document.querySelector("#state_file").value =  window.opener.prefs.data.state_file;
+	document.querySelector("#http_port").value =  window.opener.prefs.data.http_port;
 
 	if (window.opener.prefs.data.jack_noconnect == true) {
 		document.getElementById('jack_noconnect').checked = true;
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		window.opener.prefs.data.jack_ports     = document.getElementById("jack_ports").value;
 		window.opener.prefs.data.cue_command    = document.getElementById("cue_command").value;
-		window.opener.prefs.data.state_file     = document.getElementById("state_file").value;
+		window.opener.prefs.data.http_port     = document.getElementById("http_port").value;
 		window.opener.prefs.data.jack_noconnect = document.getElementById("jack_noconnect").checked;
 		window.opener.prefs.data.end_warning    = document.getElementById("end_warning").checked;
 

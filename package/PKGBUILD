@@ -1,32 +1,43 @@
-# Maintainer: Sam Mulvey <github@refutationalist.com>
+# Maintainer: Sam Mulvey <code@ktqa.org>
 pkgname=spotmonger
-pkgver=1.3.2
+pkgver=1.4
 pkgrel=1
 pkgdesc="broadcast cart-player oriented audio player"
-arch=('x86_64' 'i686')
+arch=('x86_64')
 url="http://sam.vis.nu/"
 license=('GPL')
-groups=('studmufn')
 depends=('nwjs' 'php' 'ffmpeg' 'tar' 'mplayer')
-changelog=
-replaces=('cartamoc')
-conflicts=('cartamoc')
-source=(spotmonger.tgz)
-noextract=(spotmonger.nw)
+makedepends=('inkscape' 'zip')
 install="spotmonger.install"
 
-
+prepare() {
+	cp -r ../../{app,icons,spotmaker.php} .
+}
 
 build() {
-	echo "I like pie."
+	cd "${srcdir}/app"
+	zip -r "${srcdir}/spotmonger.nw"  .
 }
+	
+	
 
 
 package() {
-	cd $pkgdir
 
-	cp -r ${srcdir}/mk/* .
-	chown -R root:root $pkgdir
-	chmod 755 ${pkgdir}/usr/bin/spotmonger
-	
+	for r in 16 32 48 64 128 256 512 1024; do
+		mkdir -p "${pkgdir}/usr/share/icons/hicolor/${r}x${r}/apps/"
+		inkscape -o "${pkgdir}/usr/share/icons/hicolor/${r}x${r}/apps/spotmonger.png" -w $r -h $r "${srcdir}/icons/spotmonger.svg"
+	done
+
+	mkdir -p "${pkgdir}/usr/bin" "${pkgdir}/usr/lib" "${pkgdir}/usr/share/applications"
+	cp "${srcdir}/spotmonger.nw" "${pkgdir}/usr/lib/spotmonger.nw"
+
+	echo $pkgdir
+
+	install -m755 "${srcdir}/../spotmonger.exec" "${pkgdir}/usr/bin/spotmonger"
+	install -m644 "${srcdir}/../spotmonger.desktop" "${pkgdir}/usr/share/applications"
+	install -m755 "${srcdir}/spotmaker.php" "${pkgdir}/usr/bin/spotmaker"
+	install -m644 "${srcdir}/spotmonger.nw" "${pkgdir}/usr/lib/spotmonger.nw"
+
+
 }

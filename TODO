@@ -1,10 +1,4 @@
-  * "soundboard mode" for playing clips faster during shows
-  * external control (http server, I assume)
   * verify licensing of included code and fonts (have a quick look before)
-  * pick a safer/saner way to handle
-    - cart/tar file handling
-	- mplayer location
-	- config file location
+  * pick a safer/saner way to handle cart/tar file handling
   * some sanity checking in the config file
-
-  * nw.js bug: figure out relationship between at-launch error and timeset icon invisibility
+  * move to mpv

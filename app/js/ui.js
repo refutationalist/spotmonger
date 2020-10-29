@@ -314,6 +314,122 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 
+	let port = parseInt(prefs.data.http_port);
+	if (port > 1024) {
+
+		error.note(`REMOTE: starting http server on port ${port}`);
+		var url = require('url');
+		var http = require('http');
+		http.createServer(function(req, res) {
+			res.writeHead(200, { 'Content-Type': 'application/json' });
+			let query = url.parse(req.url, true).query;
+
+			try {
+				res.writeHead(200, { 'Content-Type': 'application/json' });
+
+				switch (query.cmd) {
+
+					case "status":
+						res.write(JSON.stringify({ error: 0, state: sm.state(), text: "status done." }, null, 4));
+						break;
+
+					case "playpause":
+					case "play":
+					case "pause":
+						sm.playpause();
+						res.write(JSON.stringify({ error: 0, text: "playpause done." }, null, 4));
+						error.note("REMOTE: playpause called");
+						break;
+
+					case "eject":
+						sm.eject();
+						res.write(JSON.stringify({ error: 0, text: "eject done." }, null, 4));
+						error.note("REMOTE: eject called");
+						break;
+
+
+					case "next":
+						sm.next();
+						res.write(JSON.stringify({ error: 0, text: "next done." }, null, 4));
+						error.note("REMOTE: next called");
+						break;
+
+
+					case "prev":
+						sm.prev();
+						res.write(JSON.stringify({ error: 0, text: "prev done." }, null, 4));
+						error.note("REMOTE: prev called");
+						break;
+
+					case "load":
+						if (!query.id) {
+							res.write(JSON.stringify({ error: 1, text: "Cart ID must be specified." }, null, 4));
+							error.note("REMOTE: failed to load cart");
+							
+						} else {
+							sm.load(query.id);
+							res.write(JSON.stringify({ error: 0, text: "load done." }, null, 4));
+							error.note(`REMOTE: loaded cart ${query.id}`);
+							
+						}
+
+						break;
+
+
+					case "cue":
+						if (!query.id) {
+							res.write(JSON.stringify({ error: 1, text: "Cart ID must be specified." }, null, 4));
+							error.note("REMOTE: failed to cue cart");
+
+						} else if (!query.stamp) {
+							res.write(JSON.stringify({ error: 1, text: "Stamp must be specified." }, null, 4));
+							error.note("REMOTE: failed to cue cart");
+							
+						} else {
+							let stamp = parseInt(query.stamp);
+
+							if (stamp == NaN || stamp == 0) {
+								sm.set_cue(query.id, null);
+							} else {
+								sm.set_cue(query.id, stamp);
+							}
+							res.write(JSON.stringify({ error: 0, text: "cue done." }, null, 4));
+							error.note(`REMOTE: cued cart ${query.id}`);
+							
+						}
+
+						break;
+
+
+					case "add":
+						if (!query.file) {
+							res.write(JSON.stringify({ error: 1, text: "File must be specified." }, null, 4));
+							error.note("REMOTE: failed to add file");
+						} else {
+							sm.add(query.file);
+							res.write(JSON.stringify({ error: 0, text: "add done." }, null, 4));
+							error.note(`REMOTE: added file "${query.file}"`);
+						}
+						break;
+					default:
+						res.write(JSON.stringify({ error: 1, text: "Invalid command." }, null, 4));
+						error.note(`REMOTE: invalid command ${query.cmd} called`);
+				}
+
+			} catch (e) {
+				res.writeHead(500, { 'Content-Type': 'application/json' });
+				res.write(JSON.stringify({ error: 1, text: e.message }, null, 4));
+				error.note(`REMOTE: error ${e.message}`);
+			}
+
+
+
+			res.end();
+
+		}).listen(port);
+	}
+
+
 
 });
 

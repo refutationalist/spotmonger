@@ -59,28 +59,6 @@ var Spotmonger_Control = function(in_config) {
 	});
 
 
-	
-	if (config.prefs.state_file != "") { // set up state file 
-		error.note("configuring state file");
-
-		state.state_file_loop = setInterval(function() {
-
-			try {
-
-				var dumpstate = {
-									loaded: state.loaded,
-									carts: cart.carts,
-									mplayer: mpl.state
-				};
-
-				require('fs').writeFileSync(config.prefs.state_file,
-											JSON.stringify(dumpstate, null, 4));
-			} catch (e) {
-				error.report("State File Error: "+e);
-			}
-		}, config.loopint);
-	}
-
 
 	// END INIT CODE
 
@@ -293,6 +271,17 @@ var Spotmonger_Control = function(in_config) {
 
 	}
 
+	function get_state() {
+		
+		var dumpstate = {
+			loaded: state.loaded,
+			carts: cart.carts,
+			mplayer: mpl.state
+		};
+
+		return dumpstate;
+	}
+
 
 	return {
 		add: function(file) { return add_cart(file); },
@@ -367,7 +356,13 @@ var Spotmonger_Control = function(in_config) {
 
 			state.stopclock = 0;
 			
+		},
+
+		state: function() {
+			return get_state();
 		}
+
+
 
 
 

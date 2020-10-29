@@ -5,7 +5,7 @@ var prefs = {
 		jack_ports:     "system.*playback_[12]", // port regex to connect to.  passed to mplayer.
 		jack_noconnect: false, // or, just don't connect and let something else handle it
 		cue_command:    "", // command to call when countdown reaches zero
-		state_file:     "", // json state file for external usage
+		http_port:     "", // json state file for external usage
 		end_warning:    "" // warn on end of track
 	},
 

@@ -13,6 +13,11 @@ The (eventual) end users would be podcast producers who prefer live production, 
 
 I'll call this all GPLv3 for now unless a better idea comes along.  Includes jQuery, [Font Awesome](https://fortawesome.github.io/Font-Awesome/) and some fonts from the Google Web Fonts kit.   As I didn't originally plan on releasing this, I may need to change some of that around as time goes on.
 
+New Features in 1.4:
+  * Removed JSON state file
+  * Intoduced http control of running spotmonger
+  * Cheap hack in anticipation of a rewrite in 2021
+
 New features in 1.3:
   * jquery removed (css3 animations)
   * spotmonger UI rewrite
