@@ -1,0 +1,97 @@
+@font-face {
+	font-family: RobotoLight;
+	src: url("../fonts/Roboto-Light.woff2");
+}
+
+@font-face {
+	font-family: 'FontAwesome';
+	src: url('../fonts/fontawesome-webfont.woff2');
+}
+
+
+.icon {
+	font-style: normal;
+	font-family: "FontAwesome" !important;
+	
+}
+
+@font-face {
+	font-family: RobotoCondensed;
+	src: url("../fonts/RobotoCondensed-Regular.woff2");
+}
+
+
+* {
+	outline: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+}
+
+body {
+	padding: 0;
+	margin: 0;
+}
+
+div.error_logs,
+div.time_set,
+div.prefs {
+	/*width: 350px;
+	height: 400px;*/
+	background: linear-gradient(to bottom,  #eeeeee 0%,#cccccc 100%);
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+
+}
+
+h1 {
+	font-family: RobotoCondensed;
+	margin: 0;
+	padding: 0;
+}
+
+
+
+.btn, button {
+	background: linear-gradient(to bottom, #ffffff 0%, #e5e5e5 100%);
+	border: 1px solid #aaaaaa;
+	border-radius: 20px;
+	line-height: 100%;
+	font-family: "RobotoLight";
+	font-size: 18px;
+	text-shadow:1px 1px 0px #ffffff;
+	color: #444444;
+}
+
+.btn.broken, button.broken {
+	background: #999999;
+}
+
+.btn:active, button:active,
+.btn.pressed, button.pressed {
+	 box-shadow: inset 2px 2px 11px 0px rgba(0, 0, 0, 0.75);	
+}
+
+
+#file_load {
+	display: none;
+}
+
+
+/* for textoverflow */
+
+.pingpong {
+	overflow: hidden;
+}
+
+.pingpong .pgpg_inner {
+	white-space: nowrap;
+	top: 0; left: 0; bottom: 0; right: 0;
+	transition: 10s ease-in-out;
+	transform: translateX(0px);
+}
+
+

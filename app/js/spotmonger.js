@@ -191,7 +191,8 @@ var Spotmonger_Control = function(in_config) {
 		}
 	}
 
-	function update_display() {
+	function get_display() {
+
 
 		var display = {
 			cart: 'Stopped',
@@ -232,13 +233,21 @@ var Spotmonger_Control = function(in_config) {
 
 
 				display.percentage = (mpl.state.time_position / mpl.state.length) * 100;
+
+				if (display.percentage < 0) display.percentage = 0;
 			}
 
 			display.state = (mpl.state.pause == "no") ? 'PLAYING' : 'PAUSED';
-
 		}
 
-		emitter.emit('SM_display', display);
+
+		return display;
+	}
+
+	function update_display() {
+
+
+		emitter.emit('SM_display', get_display());
 
 	}
 
@@ -360,6 +369,10 @@ var Spotmonger_Control = function(in_config) {
 
 		state: function() {
 			return get_state();
+		},
+
+		display: function() {
+			return get_display();
 		}
 
 

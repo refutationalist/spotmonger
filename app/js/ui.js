@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 		*/
 
-		//document.getElementById('play').innerHTML = (info.state == 'PAUSED') ? "&#xf04b;" : "&#xf04c;";
+		document.getElementById('play').innerHTML = (info.state == 'PAUSED') ? "&#xf04b;" : "&#xf04c;";
 
 		var play_ele = document.getElementById('play');
 		var main_ele = document.getElementById('main');
@@ -325,12 +325,12 @@ document.addEventListener("DOMContentLoaded", function() {
 			let query = url.parse(req.url, true).query;
 
 			try {
-				res.writeHead(200, { 'Content-Type': 'application/json' });
+				res.writeHead(200, { 'Content-Type': 'application/json' }); //, 'Access-Control-Allow-Origin': '*' });
 
 				switch (query.cmd) {
 
 					case "status":
-						res.write(JSON.stringify({ error: 0, state: sm.state(), text: "status done." }, null, 4));
+						res.write(JSON.stringify({ error: 0, display: sm.display(), state: sm.state(), text: "status done." }, null, 4));
 						break;
 
 					case "playpause":
@@ -417,7 +417,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				}
 
 			} catch (e) {
-				res.writeHead(500, { 'Content-Type': 'application/json' });
+				res.writeHead(500, { 'Content-Type': 'application/json' }); //, 'Access-Control-Allow-Origin': '*' });
 				res.write(JSON.stringify({ error: 1, text: e.message }, null, 4));
 				error.note(`REMOTE: error ${e.message}`);
 			}

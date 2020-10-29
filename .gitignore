@@ -1,3 +1,5 @@
 package/*pkg.tar.zst
 package/src
 package/pkg
+web/fonts/*
+web/js/textoverflow.js
