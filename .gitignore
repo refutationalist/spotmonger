@@ -1,5 +1,5 @@
-package/*pkg.tar.zst
-package/src
-package/pkg
+archlinux/*pkg.tar.zst
+archlinux/src
+archlinux/pkg
 web/fonts/*
 web/js/textoverflow.js

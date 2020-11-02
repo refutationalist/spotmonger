@@ -7,6 +7,7 @@ arch=('x86_64')
 url="http://sam.vis.nu/"
 license=('GPL')
 depends=('nwjs' 'php' 'ffmpeg' 'tar' 'mplayer')
+optdepends=('systemjack: start on boot')
 makedepends=('inkscape' 'zip')
 install="spotmonger.install"
 
@@ -29,7 +30,7 @@ package() {
 		inkscape -o "${pkgdir}/usr/share/icons/hicolor/${r}x${r}/apps/spotmonger.png" -w $r -h $r "${srcdir}/icons/spotmonger.svg"
 	done
 
-	mkdir -p "${pkgdir}/usr/bin" "${pkgdir}/usr/lib" "${pkgdir}/usr/share/applications"
+	mkdir -p "${pkgdir}/usr/bin" "${pkgdir}/usr/lib" "${pkgdir}/usr/share/applications" "${pkgdir}/usr/lib/systemjack/extra.d" "${pkgdir}/usr/lib/systemd/system"
 	cp "${srcdir}/spotmonger.nw" "${pkgdir}/usr/lib/spotmonger.nw"
 
 	echo $pkgdir
@@ -38,6 +39,12 @@ package() {
 	install -m644 "${srcdir}/../spotmonger.desktop" "${pkgdir}/usr/share/applications"
 	install -m755 "${srcdir}/spotmaker.php" "${pkgdir}/usr/bin/spotmaker"
 	install -m644 "${srcdir}/spotmonger.nw" "${pkgdir}/usr/lib/spotmonger.nw"
+
+	install -Dm755 ../libexec_spotmonger.sh "$pkgdir"/usr/lib/systemjack/spotmonger
+	install -Dm755 ../extra_spotmonger.sh   "$pkgdir"/usr/lib/systemjack/extra.d/spotmonger.sh
+	install -Dm644 ../spotmonger.service    "$pkgdir"/usr/lib/systemd/system
+
+
 
 
 }
