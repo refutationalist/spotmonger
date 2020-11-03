@@ -21,9 +21,57 @@
 	document.addEventListener("DOMContentLoaded", function() {
 		update_state();
 
+		document.getElementById('play').addEventListener('click', function() {
+			send_command("playpause");
+		});
 
+		document.getElementById('next').addEventListener('click', function() {
+			send_command("next");
+		});
+
+		document.getElementById('prev').addEventListener('click', function() {
+			send_command("prev");
+		});
+
+		document.getElementById('eject').addEventListener('click', function() {
+			send_command("eject");
+		});
+		
 
 	});
+
+	function send_command(cmd, args = {}) {
+
+		let req = new XMLHttpRequest();
+
+		req.onreadystatechange = function() {
+			if (req.readyState == 4 && req.status == 200) {
+				data = JSON.parse(req.responseText);
+
+				if (data.error != 0) {
+					alert(`Spotmonger Error: ${data.text}`);
+				}
+
+
+
+
+			}
+		};
+
+
+		let sndarg = '';
+
+		for (x in args) {
+			//sndarg += `&${x}=${args[x]}`;
+			sndarg += '&' + x + '=' + args[x];
+		}
+
+		req.open("GET", `${url}?cmd=${cmd}${sndarg}`, true);
+		req.send();
+		
+	}
+
+
 
 
 
@@ -61,7 +109,6 @@
 
 				if (data.display.track == undefined || (trackname_ele.innerText.trim() != data.display.track.trim()))
 					trackname_ele.innerHTML = data.display.track;
-
 
 
 				if (data.display.cart_length == 0) {
@@ -124,17 +171,30 @@
 							`<div class="name">${data.state.carts[x].name}</div>`+
 							`<div class="state"></div>`+
 							`<div class="time">${data.state.carts[x].runtime}</div>`+
-							"<div class='timeset icon'>&#xf017;</div>"
+							"<div style='display: none;' class='timeset icon'>&#xf017;</div>"
 						);
 
-						new_div.addEventListener('click', function() { 
-							load_cart(data.state.carts[x].id);
-						});
+						new_div.addEventListener('click', function(evt) { 
+
+							let id = evt.target.id;
+							if (!id) id = evt.target.parentNode.id;
+							console.log(`loading cart ${id}`);
+
+							send_command(
+								'load',
+								{ id: id }
+							);
+							
+						}.bind(data));
+
+						/*
 
 						new_div.querySelector('div.timeset').addEventListener('click', function(evt) {
+
 							console.log("cue", evt.target.parentNode.id);
 							evt.stopPropagation();
 						});
+						*/
 
 						cart_list.appendChild(new_div);
 					}
@@ -143,6 +203,14 @@
 
 
 					hash_cart = hash;
+					active_cart = null;
+				}
+
+				if (data.state.loaded != active_cart) {
+					document.querySelectorAll("#carts .cart").forEach(function (e) { e.classList.remove("loaded"); });
+					document.getElementById(data.state.loaded).classList.add("loaded");
+					active_cart = data.state.loaded;
+
 				}
 
 
