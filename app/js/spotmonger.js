@@ -10,19 +10,17 @@ var Spotmonger_Control = function(in_config) {
 					  },
 		emitter:      null,
 		ffprobe:      "/usr/bin/ffprobe",
-		mplayer:      "/usr/bin/mplayer",
+		mpv:          "/usr/bin/mpv",
 		tar:          "/usr/bin/tar",
 		prefs:        { },
-		silence_file: process.cwd()+'/silence.mp3',
 		loopint:      100,
-		endtok:       'CARTAMOC.SILENCE'
 	};
 
 
 	var state = {
 		loaded: false,
 		stopclock: 0,
-		mpl_loop: false,
+		loop: false,
 		state_file_loop: false
 	}
 
@@ -40,10 +38,15 @@ var Spotmonger_Control = function(in_config) {
 
 
 
-	var mpl  = new MPlayerControl(config.mplayer, 
-								 (config.prefs.jack_noconnect) ? "noconnect" : config.prefs.jack_ports);
+	var player = new mpv({
+		name: "spotmonger",
+		bin: config.mpv,
+		ports: config.prefs.jack_ports,
+		noconnect: (config.prefs.jack_noconnect) ? true : false,
+		idlePause: true
+	});
+	player.error = error.note;
 
-	mpl.report_error = error.note;
 
 	var cart = new CartFiles({
 								tar: config.tar,
@@ -51,12 +54,15 @@ var Spotmonger_Control = function(in_config) {
 								report_error: error.report
 							 });
 
-
+	/*
 	mpl.init(function() {
 		error.note("starting mpl");
 		state.mpl_loop = setInterval(loop, config.loopint);
 
 	});
+	*/
+	state.loop = setInterval(loop, config.loopint);
+	
 
 
 
@@ -138,7 +144,7 @@ var Spotmonger_Control = function(in_config) {
 		update_cartstate(id, "Loading");
 
 		var do_load = function() {
-			mpl.loadlist(files, function() {
+			player.playlist(files, function() {
 
 				update_cartstate(id, "Loaded");
 				emitter.emit('SM_load', id);
@@ -146,13 +152,13 @@ var Spotmonger_Control = function(in_config) {
 
 
 				if (autoplay == true) {
-					mpl.playpause();
+					player.pause();
 				}
-			});
+			}.bind(state));
 		};
 
-		if (mpl.state.pause == "no") {
-			mpl.stop(do_load);
+		if (player.paused == false) {
+			player.stop(do_load);
 		} else {
 			do_load();
 		}
@@ -182,7 +188,7 @@ var Spotmonger_Control = function(in_config) {
 		if (state.loaded == false) {
 			warn("No cart loaded.");
 		} else {
-			mpl.loadfile(config.silence_file, false, true, function() {
+			player.stop(function() {
 				cart.unload(state.loaded);
 				emitter.emit('SM_eject', state.loaded);
 				state.loaded = false;
@@ -206,15 +212,15 @@ var Spotmonger_Control = function(in_config) {
 			state: 'PAUSED'
 		}
 
-		if (state.loaded != false && mpl.state.meta_title != config.endtok) {
+		if (state.loaded != false && typeof player.state.paused != 'undefined') {
 
 			display.cart = cart.getCartInfo(state.loaded).name;
 			display.cart_length = cart.getCartFiles(state.loaded).length;
 
 
 			var cartpos = -1;
-			if (mpl.state.filename != undefined) {
-				cartpos = cart.carts[state.loaded].files.indexOf( path.basename(mpl.state.filename) );
+			if (typeof player.state.filename != 'undefined') {
+				cartpos = cart.carts[state.loaded].files.indexOf( path.basename(player.state.filename) );
 			}
 
 			if (cartpos == -1) {
@@ -224,20 +230,20 @@ var Spotmonger_Control = function(in_config) {
 
 			} else {
 				display.cart_position = cartpos + 1;
-				display.track = (cart.carts[state.loaded].single == true) ? '' : mpl.state.meta_title;
+				display.track = (cart.carts[state.loaded].single == true) ? '' : player.state.metadata.title;
 
 
-				display.track_length = int_to_time(parseInt(mpl.state.length));
-				display.track_remain_s = parseInt(mpl.state.length) - parseInt(mpl.state.time_position);
+				display.track_length = int_to_time(parseInt(player.state.statistics.duration));
+				display.track_remain_s = player.state.remaining;
 				display.track_remain = int_to_time(display.track_remain_s);
 
 
-				display.percentage = (mpl.state.time_position / mpl.state.length) * 100;
+				display.percentage = player.state.percent
 
 				if (display.percentage < 0) display.percentage = 0;
 			}
 
-			display.state = (mpl.state.pause == "no") ? 'PLAYING' : 'PAUSED';
+			display.state = (player.state.paused) ? 'PAUSED' : 'PLAYING';
 		}
 
 
@@ -285,7 +291,7 @@ var Spotmonger_Control = function(in_config) {
 		var dumpstate = {
 			loaded: state.loaded,
 			carts: cart.carts,
-			mplayer: mpl.state
+			mpv: player.state
 		};
 
 		return dumpstate;
@@ -297,19 +303,19 @@ var Spotmonger_Control = function(in_config) {
 		eject: function(id) { return remove_cart(id); },
 		load: function(id, autoplay) { return load_cart(id, autoplay); },
 
-
 		next: function() { 
-			mpl.next();	
+			player.next();	
 		},
 
 		prev: function() { 
 			if (state.loaded != false) {
 			
-				var pos = cart.getCartInfo(state.loaded).files.indexOf(mpl.state.filename);
-				if (pos == 0) {
-					mpl.seek(0, 1);
+				var pos = cart.getCartInfo(state.loaded).files.indexOf(player.state.filename);
+				console.log("POS", pos, state.loaded);
+				if (pos <= 0) {
+					player.seek(0);
 				} else {
-					mpl.previous();  
+					player.previous();
 				}
 
 			}
@@ -317,12 +323,19 @@ var Spotmonger_Control = function(in_config) {
 
 
 		playpause: function() { 
-			
-			if (state.loaded != false &&
-				mpl.state.meta_title == config.endtok) {
+
+			let in_playlist = false;
+			for (const x in player.state.playlist) {
+				if (player.state.playlist[x].current == true) in_playlist = true;
+			}
+
+			console.log("in_playlist", in_playlist);
+
+
+			if (state.loaded != false && in_playlist == false) { 
 				load_cart(state.loaded, true);
 			} else {
-				mpl.playpause(); 
+				player.pause(); 
 			}
 
 		},
@@ -330,14 +343,13 @@ var Spotmonger_Control = function(in_config) {
 
 
 		destruct: function() { 
-			error.note("quitting mplayer");
-			mpl.quit();
+			error.note("quittig mpv");
+			player.quit();
 
 			error.note("cart cleanup");
 			cart.cleanup();
 			
 		},
-
 
 		get_cue: function(id) {
 			return cart.getCartInfo(id).start_at;

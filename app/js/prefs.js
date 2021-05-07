@@ -2,7 +2,7 @@
 var prefs = {
 
 	defaults: {
-		jack_ports:     "system.*playback_[12]", // port regex to connect to.  passed to mplayer.
+		jack_ports:     "system.*playback_[12]", // port regex to connect to.  passed to mpv.
 		jack_noconnect: false, // or, just don't connect and let something else handle it
 		cue_command:    "", // command to call when countdown reaches zero
 		http_port:     "", // json state file for external usage

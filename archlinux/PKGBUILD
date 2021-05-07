@@ -1,12 +1,12 @@
 # Maintainer: Sam Mulvey <code@ktqa.org>
 pkgname=spotmonger
-pkgver=1.4
+pkgver=1.4.1
 pkgrel=1
 pkgdesc="broadcast cart-player oriented audio player"
 arch=('x86_64')
 url="http://sam.vis.nu/"
 license=('GPL')
-depends=('nwjs' 'php' 'ffmpeg' 'tar' 'mplayer')
+depends=('nwjs' 'php' 'ffmpeg' 'tar' 'mpv' 'which')
 optdepends=('systemjack: start on boot')
 makedepends=('inkscape' 'zip')
 install="spotmonger.install"

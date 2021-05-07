@@ -3,12 +3,14 @@ var sm; // so it can be called by settime
 
 document.addEventListener("DOMContentLoaded", function() {
 
+	const process = require('process');
+
 
 	try {
 		var cp = require('child_process');
 
 		var tar = cp.execSync('which tar', { encoding: 'utf8' }).trim();
-		var mplayer = cp.execSync('which mplayer', { encoding: 'utf8' }).trim();
+		var mpv = cp.execSync('which mpv', { encoding: 'utf8' }).trim();
 		var ffprobe = cp.execSync('which ffprobe', { encoding: 'utf8' }).trim();
 
 		var data_path = nw.App.dataPath;
@@ -18,8 +20,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		nw.App.quit();
 	}
 
-	process.stderr.write(sprintf("Commands:\n\ttar: %s\n\tmplayer: %s\n\tffprobe: %s\n\tdp: %s\n\n", 
-								 tar, mplayer, ffprobe, data_path));
+	process.stderr.write(sprintf("Commands:\n\ttar: %s\n\tmpv: %s\n\tffprobe: %s\n\tdp: %s\n\n", 
+								 tar, mpv, ffprobe, data_path));
 
 
 	var emitter = new (require('events')).EventEmitter();
@@ -34,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	sm = Spotmonger_Control({
 								tar: tar,
-								mplayer: mplayer,
+								mpv: mpv,
 								ffprobe: ffprobe,
 								error: error,
 								emitter: emitter,
@@ -51,7 +53,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	
 	process.on('uncaughtException', error.report);
-	nw.Window.get().on('closed', function() {
+
+	process.on('exit', function() {
 		sm.destruct();
 		error.note("exit complete.");
 	});
